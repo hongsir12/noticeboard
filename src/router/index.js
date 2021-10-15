@@ -5,6 +5,7 @@ import VueRouter from 'vue-router'
 // import devBarAndPiePage from '@/views/devBarAndPiePage.vue'
 // import rsBarPage from '@/views/rsBarPage.vue'
 import ScreenPage from '@/views/ScreenPage.vue'
+import DataEntryPage from '@/views/DataEntryPage.vue'
 
 Vue.use(VueRouter)
 
@@ -15,6 +16,7 @@ const routes = [
   // { path: '/rsLinePage', component: rsLinePage },
   // { path: '/devBarAndPiePage', component: devBarAndPiePage },
   // { path: '/rsBarPage', component: rsBarPage },
+  { path: '/dataEntry', component: DataEntryPage },
 ]
 
 const router = new VueRouter({

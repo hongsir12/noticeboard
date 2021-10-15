@@ -340,9 +340,7 @@ export default {
     },
     // 当浏览器大小发生变化时候，调用方法完成屏幕适配
     screenAdapter() {
-      // console.log(this.$refs.devLineRef.offsetWidth);
       const titleFontSize = (this.$refs.devLineRef.offsetWidth / 100) * 3
-      // console.log(titleFontSize)
       // 和分辨率大小相关的配置项
       const adapterOption = {
         title: {

@@ -1,5 +1,6 @@
 <template>
   <div class="screen-container">
+    <dv-loading v-if="loading">Loading...</dv-loading>
     <!-- 屏幕顶部 -->
     <header class="screen-header" id="capture">
       <dv-decoration-10 class="dv-dec-10" />
@@ -17,15 +18,14 @@
 
       <!-- 选择周次下拉框 -->
       <div class="selectWeek">
-        <span>第</span>
-        <div class="option">
-          <select name="week">
-            <option value="39">39</option>
-            <option value="40">40</option>
-            <option value="41" selected>41</option>
-          </select>
-        </div>
-        <span>周</span>
+        <el-date-picker
+          v-model="time"
+          type="week"
+          format="yyyy-MM-dd 第 WW 周"
+          placeholder="选择周"
+          :clearable = 'false'
+        >
+        </el-date-picker>
       </div>
 
       <!-- 截图按钮 -->
@@ -146,6 +146,7 @@ import rsWeekly from '@/components/rsWeekly'
 export default {
   data() {
     return {
+      loading: true,
       // 定义每一个图表的全屏状态
       fullScreenStatus: {
         rsBar: false,
@@ -153,10 +154,12 @@ export default {
         devBarAndPie: false,
         devLine: false,
       },
+      time:new Date(),     
     }
   },
 
   mounted() {
+    this.cancelLoading()
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
@@ -203,6 +206,11 @@ export default {
         (document.getElementById('capture').offsetWidth / 100) * 1.5
       let headTitle = document.getElementsByClassName('title-text')[0]
       headTitle.style.fontSize = `${headTitleFontSize}px`
+    },
+    cancelLoading() {
+      setTimeout(() => {
+        this.loading = false
+      }, 500)
     },
   },
   components: {
