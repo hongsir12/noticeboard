@@ -6,16 +6,23 @@
     </div>
     <div class="screen-body">
       <div class="top">
-          <dv-border-box-11 title="运行情况">
+          <!-- <dv-border-box-11 :color="['black', 'black']"  title="运行情况"> -->
               <devEntry></devEntry>
-          </dv-border-box-11></div>
-      <div class="bottom"><dv-border-box-11 title="资源情况"></dv-border-box-11></div>
+          <!-- </dv-border-box-11> -->
+          </div>
+      <div class="bottom">
+        <!-- <dv-border-box-11 :color="['black', 'black']"  title="资源情况"> -->
+          <rsEntry></rsEntry>
+        <!-- </dv-border-box-11> -->
+        </div>
     </div>
   </div>
 </template>
 <script>
 import entryHead from '@/components/dataEntry/entryHead'
 import devEntry from '@/components/dataEntry/devEntry'
+import rsEntry from '@/components/dataEntry/rsEntry'
+
 export default {
   data() {
     return {}
@@ -26,7 +33,8 @@ export default {
   methods: {},
   components: {
     entryHead,
-    devEntry
+    devEntry,
+    rsEntry
   },
 }
 </script>
@@ -35,12 +43,12 @@ export default {
   width: 100%;
   height: 100%;
   padding: 0 200px;
-  background-color: #161522;
-  color: #fff;
+  background-color: #fff;
+  color: #111;
   box-sizing: border-box;
-  background-image: url('../assets/pageBg.png');
-  background-size: cover;
-  background-position: center center;
+  // background-image: url('../assets/pageBg.png');
+  // background-size: cover;
+  // background-position: center center;
   .screen-header {
     width: 100%;
     height: 64px;
@@ -51,11 +59,14 @@ export default {
     .top {
       width: 100%;
       height: 45%;
+      border: 1px solid #111
     }
     .bottom {
       width: 100%;
       height: 45%;
       margin-top: 10px;
+      border: 1px solid #111
+
     }
   }
 }
