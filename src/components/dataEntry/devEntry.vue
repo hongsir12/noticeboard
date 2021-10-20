@@ -87,7 +87,7 @@
           </el-table-column>
           <el-table-column fixed="right" align="center">
             <template slot="header" slot-scope="">
-              <el-button type="primary" size="small" icon="el-icon-plus" :disabled="tableData.length === 7 ? 'false':'true' "
+              <el-button type="primary" size="small" icon="el-icon-plus" :disabled="tableData.length === 7 ? true:false "
                >新增</el-button
               >
             </template>
@@ -120,7 +120,7 @@ import { Debounce } from '@/utils/debounce'
 export default {
   data() {
     return {
-      tableData: null, // 表格数据
+      tableData: [], // 表格数据
       options: [
         {
           value: '物理设备',
@@ -151,7 +151,7 @@ export default {
   watch: {
     // 监听文本框输入内容
     textarea1: Debounce(function(val) {
-      console.log(this.textarea1)
+      console.log(this.tableData.length)
     }, 1000),
   },
   methods: {
@@ -211,15 +211,15 @@ export default {
           user: 'abc',
           iseditor: false,
         },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 60,
-          err: 3,
-          date: '2021-10-16',
-          user: 'abc',
-          iseditor: false,
-        },
+        // {
+        //   type: '物理设备',
+        //   normal: 200,
+        //   focus: 60,
+        //   err: 3,
+        //   date: '2021-10-16',
+        //   user: 'abc',
+        //   iseditor: false,
+        // },
         {
           type: '操作系统',
           normal: 220,

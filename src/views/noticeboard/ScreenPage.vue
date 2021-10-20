@@ -137,12 +137,12 @@
 </template>
 <script>
 import html2canvas from 'html2canvas'
-import devLine from '@/components/devLine'
-import rsLine from '@/components/rsLine'
-import devBarAndPie from '@/components/devBarAndPie'
-import rsBar from '@/components/rsBar'
-import devWeekly from '@/components/devWeekly'
-import rsWeekly from '@/components/rsWeekly'
+import devLine from '@/components/noticeboard/devLine'
+import rsLine from '@/components/noticeboard/rsLine'
+import devBarAndPie from '@/components/noticeboard/devBarAndPie'
+import rsBar from '@/components/noticeboard/rsBar'
+import devWeekly from '@/components/noticeboard/devWeekly'
+import rsWeekly from '@/components/noticeboard/rsWeekly'
 export default {
   data() {
     return {
@@ -232,7 +232,7 @@ export default {
   width: 100% !important;
   height: 100% !important;
   margin: 0 !important;
-  background-image: url('../assets/pageBg.png');
+  background-image: url('../../assets/pageBg.png');
   background-size: cover;
   background-position: center center;
   z-index: 999;
@@ -244,7 +244,7 @@ export default {
   background-color: #161522;
   color: #fff;
   box-sizing: border-box;
-  background-image: url('../assets/pageBg.png');
+  background-image: url('../../assets/pageBg.png');
   background-size: cover;
   background-position: center center;
 }

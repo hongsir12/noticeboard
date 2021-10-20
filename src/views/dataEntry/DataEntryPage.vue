@@ -59,14 +59,19 @@ export default {
     .top {
       width: 100%;
       height: 45%;
-      border: 1px solid #111
+      // border: 1px solid #111;
+      border-radius:10px;
+      box-shadow:  8px 8px 16px #bebebe,
+             -8px -8px 16px #ffffff;
     }
     .bottom {
       width: 100%;
       height: 45%;
       margin-top: 10px;
-      border: 1px solid #111
-
+      // border: 1px solid #111;
+      border-radius:10px;
+      box-shadow:  8px 8px 16px #bebebe,
+             -8px -8px 16px #ffffff;
     }
   }
 }

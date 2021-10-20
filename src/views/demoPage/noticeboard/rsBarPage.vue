@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import rsBar from '@/components/rsBar'
+import rsBar from '@/components/noticeboard/rsBar'
 export default {
   data() {
     return {}

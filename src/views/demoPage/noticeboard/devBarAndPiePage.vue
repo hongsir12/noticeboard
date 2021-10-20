@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import devBarAndPie from '@/components/devBarAndPie'
+import devBarAndPie from '@/components/noticeboard/devBarAndPie'
 export default {
   data() {
     return {}

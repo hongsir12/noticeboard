@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import rsLine from '@/components/rsLine'
+import rsLine from '@/components/noticeboard/rsLine'
 export default {
   data() {
     return {}
