@@ -2,7 +2,7 @@
 <template>
   <div class="screen-container">
     <div class="screen-header">
-      <entryHead></entryHead>
+      <entryHead :dataEntryTitle="dataEntryTitle"></entryHead>
     </div>
     <div class="screen-body">
       <div class="top">
@@ -25,7 +25,9 @@ import rsEntry from '@/components/dataEntry/rsEntry'
 
 export default {
   data() {
-    return {}
+    return {
+      dataEntryTitle:'南中心系统与设备运行情况数据录入'
+    }
   },
 
   mounted() {},
@@ -43,7 +45,7 @@ export default {
   width: 100%;
   height: 100%;
   padding: 0 200px;
-  background-color: #fff;
+  background-color: #f2f3f5;
   color: #111;
   box-sizing: border-box;
   // background-image: url('../assets/pageBg.png');

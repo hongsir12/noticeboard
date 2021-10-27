@@ -8,8 +8,9 @@ import diskIOPage from '@/views/demoPage/StorageReport/diskIOPage.vue'
 import SwitchInterfaceUtilizationPage from '@/views/demoPage/StorageReport/SwitchInterfaceUtilizationPage.vue'
 import FaultDistributionPage from '@/views/demoPage/StorageReport/FaultDistributionPage.vue'
 import weeklyReportPage from '@/views/demoPage/weeklyReport/weeklyReportPage.vue'
-import ScreenPage from '@/views/noticeboard/ScreenPage.vue'
+import ScreenPage from '@/views/ScreenPage.vue'
 import DataEntryPage from '@/views/dataEntry/DataEntryPage.vue'
+import wrDataEntryPage from '@/views/dataEntry/WeeklyReportDataEntryPage.vue'
 
 Vue.use(VueRouter)
 
@@ -25,6 +26,8 @@ const routes = [
   { path: '/SIUPage', component: SwitchInterfaceUtilizationPage },
   { path: '/fdPage', component: FaultDistributionPage },
   { path: '/wrPage', component: weeklyReportPage },
+  { path: '/wrDataEntry', component: wrDataEntryPage },
+
 ]
 
 const router = new VueRouter({

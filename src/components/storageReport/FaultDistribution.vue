@@ -10,7 +10,6 @@ export default {
     return {
       chartInstance: null,
       allData: null,
-      ss: [],
     }
   },
 
@@ -80,7 +79,6 @@ export default {
           axisTick: {
             alignWithLabel: true,
           },
-          
         },
       }
       this.chartInstance.setOption(initOption)

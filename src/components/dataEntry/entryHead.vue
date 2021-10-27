@@ -1,7 +1,7 @@
 <template>
   <div class="com-container">
     <div class="entryHead">
-      <div class="title"><span>南中心系统与设备运行情况数据录入</span></div>
+      <div class="title"><span>{{title}}</span></div>
       <div class="date-container">
         <el-date-picker
           v-model="time"
@@ -20,11 +20,21 @@ export default {
   data() {
     return {
       time: new Date(),
+      title:'',
     }
   },
-
-  mounted() {},
-
+  props:['dataEntryTitle'],
+  mounted() {
+    this.title = this.dataEntryTitle;
+    // this.$bus.$on('sendTitle',(val)=>{
+    //   this.title = val;
+    // })
+  },
+  watch:{
+    title:function(val){
+      
+    }
+  },
   methods: {},
 }
 </script>

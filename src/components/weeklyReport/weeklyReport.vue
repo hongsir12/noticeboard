@@ -11,19 +11,76 @@
 export default {
   data() {
     return {
+      chartInstance: null,
       data: null,
-      //ds: null,
     }
   },
 
   mounted() {
-    //this.initChart()
+    this.initChart(),
+      this.getData(),
+      window.addEventListener('resize', this.screenAdapter),
+      // 在页面加载完成时候，主动进行屏幕适配
+      this.screenAdapter()
   },
 
   methods: {
     // 初始化对象
     initChart() {
-      let data = this.data
+      this.chartInstance = this.$echarts.init(this.$refs.wrRef)
+      const initOption = {
+        title: {
+          text: '人员工作量分布图',
+          left: '1%',
+        },
+        legend: {},
+        tooltip: {
+          formatter: param => {
+            if (undefined === param.value['总工时']) {
+              return `工作时长: ${param.value['工作时长']}分钟 <br/>姓名: ${param.value['姓名']} <br/>开始时间: ${param.value['开始时间']}`
+            } else {
+              return `总工时: ${param.value['总工时']}小时 <br/>姓名: ${param.value['姓名']}`
+            }
+          },
+        },
+        yAxis: [
+          {
+            type: 'value',
+            name: '工作时长(分钟)',
+
+            interval: 50,
+            axisTick: {
+              alignWithLabel: true,
+            },
+          },
+          {
+            type: 'value',
+            name: '总时长(小时)',
+            max: 50,
+            interval: 10,
+            position: 'right',
+            splitLine: {
+              show: false,
+            },
+          },
+        ],
+        xAxis: {
+          type: 'value',
+          interval: 1,
+          position: 'bottom',
+          axisTick: {
+            //alignWithLabel: true,
+          },
+          
+        },
+      }
+      this.chartInstance.setOption(initOption)
+    },
+    getData() {
+        this.updateChart()
+    },
+    updateChart() {
+        let data = this.data
       // 计算 工作时长
       for (let rec of data) {
         // console.log(rec['日期']+rec['姓名']+rec['工作内容']);
@@ -179,7 +236,6 @@ export default {
           rec.y = 50
         }
       }
-      // console.log(sumData);
       ds.push({
         dimensions: ['姓名', 'x', 'y', '总时长'],
         source: sumData,
@@ -194,56 +250,10 @@ export default {
           y: 'y',
         },
       })
-
-      const option = {
-        title: {
-          text: '人员工作量分布图',
-          left: '1%',
-        },
-        legend: {},
-        tooltip: {
-          formatter: param => {
-            // console.log(this);
-            // return param.seriesName + ' <br/>'
-            //     + param.value["存储"] + ' <br/>'
-            //     + param.value["日期"] + ' <br/>';
-            if (undefined === param.value['总工时']) {
-              return `工作时长: ${param.value['工作时长']}分钟 <br/>姓名: ${param.value['姓名']} <br/>开始时间: ${param.value['开始时间']}`
-            } else {
-              return `总工时: ${param.value['总工时']}小时 <br/>姓名: ${param.value['姓名']}`
-            }
-          },
-        },
+      const dataOption = {
         dataset: ds,
-        yAxis: [
-          {
-            type: 'value',
-            name: '工作时长(分钟)',
-
-            interval: 50,
-            axisTick: {
-              alignWithLabel: true,
-            },
-          },
-          {
-            type: 'value',
-            name: '总时长(小时)',
-            max: 50,
-            interval: 10,
-            position: 'right',
-            splitLine: {
-              show: false,
-            },
-          },
-        ],
         xAxis: {
-          type: 'value',
-          interval: 1,
-          position: 'bottom',
           data: xAx,
-          axisTick: {
-            //alignWithLabel: true,
-          },
           axisLabel: {
             formatter: param => {
               let offset = 0
@@ -269,13 +279,27 @@ export default {
         },
         series: ss,
       }
-      this.chartInstance = this.$echarts.init(this.$refs.wrRef)
-      this.chartInstance.setOption(option)
+      this.chartInstance.setOption(dataOption)
+    },
+    screenAdapter() {
+      const titleFontSize = (this.$refs.wrRef.offsetWidth / 100) * 1.5
+      // 和分辨率大小相关的配置项
+      const adapterOption = {
+        title: {
+          textStyle: {
+            fontSize: titleFontSize,
+          },
+        },
+      }
+      this.chartInstance.setOption(adapterOption)
+      // 手动调用图表对象的resize才能产生效果
+      this.chartInstance.resize()
     },
     handleSelectedFile(convertedData) {
-      //   console.log(convertedData)
+        console.log(convertedData)
       this.data = convertedData.body
       this.initChart()
+      this.getData()
     },
   },
 }

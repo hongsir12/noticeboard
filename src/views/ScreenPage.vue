@@ -36,113 +36,16 @@
 
     <!-- 屏幕主体 -->
     <div class="screen-body">
-      <section class="screen-left">
-        <div
-          id="left-top"
-          :class="[fullScreenStatus.devLine ? 'fullscreen' : '']"
-        >
-          <dv-border-box-12>
-            <!--一周设备运行折线图-->
-            <devLine ref="devLine"></devLine>
-            <div class="resize">
-              <span
-                @click="changeSize('devLine', 0)"
-                :class="[
-                  'iconfont',
-                  fullScreenStatus.devLine
-                    ? 'icon-caozuo-quanping-shousuo'
-                    : 'icon-caozuo-quanping-zhankai',
-                ]"
-              ></span>
-            </div>
-          </dv-border-box-12>
-        </div>
-        <div
-          id="left-bottom"
-          :class="[fullScreenStatus.rsLine ? 'fullscreen' : '']"
-        >
-          <dv-border-box-12>
-            <!--一周资源使用折线图-->
-            <rsLine ref="rsLine"></rsLine>
-            <div class="resize">
-              <span
-                @click="changeSize('rsLine', 1)"
-                :class="[
-                  'iconfont',
-                  fullScreenStatus.rsLine
-                    ? 'icon-caozuo-quanping-shousuo'
-                    : 'icon-caozuo-quanping-zhankai',
-                ]"
-              ></span>
-            </div>
-          </dv-border-box-12>
-        </div>
-      </section>
-      <section class="screen-middle">
-        <div
-          id="middle-top"
-          :class="[fullScreenStatus.devBarAndPie ? 'fullscreen' : '']"
-        >
-          <dv-border-box-12>
-            <!--一周设备故障优化柱形图-->
-            <devBarAndPie ref="devBarAndPie"></devBarAndPie>
-            <div class="resize">
-              <span
-                @click="changeSize('devBarAndPie', 2)"
-                :class="[
-                  'iconfont',
-                  fullScreenStatus.devBarAndPie
-                    ? 'icon-caozuo-quanping-shousuo'
-                    : 'icon-caozuo-quanping-zhankai',
-                ]"
-              ></span>
-            </div>
-          </dv-border-box-12>
-        </div>
-        <div
-          id="middle-bottom"
-          :class="[fullScreenStatus.rsBar ? 'fullscreen' : '']"
-        >
-          <dv-border-box-12>
-            <!--一周资源消耗统计柱形图-->
-            <rsBar ref="rsBar"></rsBar>
-            <div class="resize">
-              <span
-                @click="changeSize('rsBar', 3)"
-                :class="[
-                  'iconfont',
-                  fullScreenStatus.rsBar
-                    ? 'icon-caozuo-quanping-shousuo'
-                    : 'icon-caozuo-quanping-zhankai',
-                ]"
-              ></span>
-            </div>
-          </dv-border-box-12>
-        </div>
-      </section>
-      <section class="screen-right">
-        <div id="right-top">
-          <dv-border-box-13>
-            <devWeekly ref="devWeeklyRef"></devWeekly>
-          </dv-border-box-13>
-        </div>
-        <div id="right-bottom">
-          <dv-border-box-13>
-            <rsWeekly ref="rsWeeklyRef"></rsWeekly>
-          </dv-border-box-13>
-        </div>
-      </section>
+      <noticeboard></noticeboard>
+      <!-- <weeklyReport></weeklyReport> -->
     </div>
   </div>
 </template>
 <script>
 import html2canvas from 'html2canvas'
-import devLine from '@/components/noticeboard/devLine'
-import rsLine from '@/components/noticeboard/rsLine'
-import devBarAndPie from '@/components/noticeboard/devBarAndPie'
-import rsBar from '@/components/noticeboard/rsBar'
-import devWeekly from '@/components/noticeboard/devWeekly'
-import rsWeekly from '@/components/noticeboard/rsWeekly'
+import noticeboard from '@/components/noticeboard/noticeboard'
+import weeklyReport from '@/components/weeklyReport/weeklyReport'
+
 export default {
   data() {
     return {
@@ -214,12 +117,8 @@ export default {
     },
   },
   components: {
-    rsBar,
-    rsLine,
-    devBarAndPie,
-    devLine,
-    devWeekly,
-    rsWeekly,
+    noticeboard,
+    weeklyReport,
   },
 }
 </script>
@@ -232,7 +131,7 @@ export default {
   width: 100% !important;
   height: 100% !important;
   margin: 0 !important;
-  background-image: url('../../assets/pageBg.png');
+  background-image: url('../assets/pageBg.png');
   background-size: cover;
   background-position: center center;
   z-index: 999;
@@ -244,7 +143,7 @@ export default {
   background-color: #161522;
   color: #fff;
   box-sizing: border-box;
-  background-image: url('../../assets/pageBg.png');
+  background-image: url('../assets/pageBg.png');
   background-size: cover;
   background-position: center center;
 }
@@ -326,7 +225,7 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
-  margin-top: 10px;
+  // margin-top: 10px;
   .screen-left {
     height: 100%;
     width: 40%;
