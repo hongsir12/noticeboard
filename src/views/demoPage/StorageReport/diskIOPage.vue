@@ -5,7 +5,7 @@
   </div>
 </template>
 <script>
-import diskIO from '@/components/storageReport/diskIO'
+// import diskIO from '@/components/storageReport/diskIO'
 import diskIO2 from '@/components/storageReport/diskIO2'
 
 export default {
