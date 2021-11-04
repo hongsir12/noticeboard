@@ -1,10 +1,12 @@
 <template>
   <div class="com-page">
-      <SwitchInterfaceUtilization></SwitchInterfaceUtilization>
+      <SwitchInterfaceUtilization2></SwitchInterfaceUtilization2>
   </div>
 </template>
 <script>
-import SwitchInterfaceUtilization from '@/components/storageReport/SwitchInterfaceUtilization'
+// import SwitchInterfaceUtilization from '@/components/storageReport/SwitchInterfaceUtilization'
+import SwitchInterfaceUtilization2 from '@/components/storageReport/SwitchInterfaceUtilization2'
+
 export default {
   data() {
     return {}
@@ -14,7 +16,7 @@ export default {
 
   methods: {},
   components:{
-      SwitchInterfaceUtilization:SwitchInterfaceUtilization,
+      SwitchInterfaceUtilization2,
   }
 }
 </script>

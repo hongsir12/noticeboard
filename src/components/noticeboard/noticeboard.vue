@@ -108,6 +108,7 @@ import rsWeekly from '@/components/noticeboard/rsWeekly'
 export default {
   data() {
     return {
+      chartInstance:null,
         loading: true,
       // 定义每一个图表的全屏状态
       fullScreenStatus: {

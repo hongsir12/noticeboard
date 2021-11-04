@@ -1,114 +1,45 @@
 <!--交换机接口使用率-->
 <template>
   <div class="com-container">
-    <div class="com-chart" ref="SIURef"></div>
+    <div class="com-chart" ref="chartRef"></div>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      chartInstance: null,
-      allData: null,
+      chartInstance: null, // echart图表实例
+      chartOption: '', // 图表配置信息option
     }
   },
 
   mounted() {
+    this.$bus.$emit('sendChartOptionName','交换机接口使用率图表配置')
     this.initChart(),
-      this.getData(),
+      this.sendOption(),
       window.addEventListener('resize', this.screenAdapter),
       // 在页面加载完成时候，主动进行屏幕适配
       this.screenAdapter()
-  },
-
-  methods: {
-    // 初始化echartInstance对象
-    initChart() {
-      this.chartInstance = this.$echarts.init(this.$refs.SIURef)
-
-      // 对图表初始化配置的控制
-      const initOption = {
-        title: {
-          text: '核心应用SAN交换机 端口使用情况',
-          left: '1%',
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            // Use axis to trigger tooltip
-            type: 'shadow', // 'shadow' as default; can also be 'line' or 'shadow'
-          },
-        },
-        legend: {},
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true,
-        },
-        tooltip: {
-          formatter: param => {
-            // console.log(param.value)
-            // return param.seriesName + ' <br/>'
-            //     + param.value["存储"] + ' <br/>'
-            //     + param.value["日期"] + ' <br/>';
-            return `${param.value['名称']} <br/> 
-      低于50%时长占比: ${(param.value['低于50%使用率'] * 100).toFixed(0)}% <br/>
-      50%~80%时长占比: ${(param.value['使用率50%~80%'] * 100).toFixed(0)}% <br/>
-      高于80%时长占比: ${(param.value['使用率80%以上'] * 100).toFixed(0)}%`
-          },
-        },
-
-        xAxis: {
-          type: 'value',
-          axisLabel: {
-            formatter: param => {
-              return `${param * 100}%`
-            },
-          },
-        },
-        yAxis: {
-          type: 'category',
-        },
-        series: [
-          {
-            type: 'bar',
-            stack: 'total',
-            seriesLayoutBy: 'row',
-            // emphasis: {
-            //   focus: 'series'
-            // },
-            // label: {
-            //   show: true,
-            // },
-          },
-          {
-            type: 'bar',
-            stack: 'total',
-            seriesLayoutBy: 'row',
-            // emphasis: {
-            //   focus: 'series'
-            // },
-            // label: {
-            //   show: true,
-            // },
-          },
-          {
-            type: 'bar',
-            stack: 'total',
-            seriesLayoutBy: 'row',
-            // emphasis: {
-            //   focus: 'series'
-            // },
-            // label: {
-            //   show: true,
-            // },
-          },
-        ],
+    // 接收编辑器组件传来的新的图表配置信息代码
+    this.$bus.$on('sendScript', res => {
+      this.chartOption = res[0]
+      if (res[1] === null) {
+        this.changeChart(this.chartOption)
+      } else {
+        this.chartOption = `let data = ` + JSON.stringify(res[1]) + ';' + res[0]
+        this.changeChart(this.chartOption)
       }
-      this.chartInstance.setOption(initOption)
-    },
-    getData() {
+    })
+  },
+  beforeDestroy() {
+    this.$bus.$off('sendScript')
+  },
+  methods: {
+    //   初始化图表
+    initChart() {
+      // 初始化echart实例
+      let myChart = this.$echarts.init(this.$refs.chartRef)
+      let option
       let data = [
         {
           名称: '接口1',
@@ -399,36 +330,138 @@ export default {
           '使用率80%以上': 0.2,
         },
       ]
+
       for (let rec of data) {
         rec['低于50%使用率'] = Math.random() * 0.2 + 0.6
         rec['使用率50%~80%'] =
           Math.random() * (0.8 - rec['低于50%使用率']) + 0.2
         rec['使用率80%以上'] = 1 - rec['低于50%使用率'] - rec['使用率50%~80%']
       }
-      this.allData = data
-      this.updateChart()
-    },
-    updateChart() {
-      const dataOption = {
+
+      option = {
+        title: {
+          text: '核心应用SAN交换机 端口使用情况',
+          left: '1%',
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            // Use axis to trigger tooltip
+            type: 'shadow', // 'shadow' as default; can also be 'line' or 'shadow'
+          },
+        },
+        legend: {},
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true,
+        },
+        tooltip: {
+          formatter: param => {
+            // return param.seriesName + ' <br/>'
+            //     + param.value["存储"] + ' <br/>'
+            //     + param.value["日期"] + ' <br/>';
+            return `${param.value['名称']} <br/> 
+      低于50%时长占比: ${(param.value['低于50%使用率'] * 100).toFixed(0)}% <br/>
+      50%~80%时长占比: ${(param.value['使用率50%~80%'] * 100).toFixed(0)}% <br/>
+      高于80%时长占比: ${(param.value['使用率80%以上'] * 100).toFixed(0)}%`
+          },
+        },
         dataset: [
           // x是按 (当前日期-最小日期) / (最大日期 - 最小日期) 的一个比例得出的位置
           // y是按 (当前日期所在星期) + (存储的序号下标 x 7) 得出哪个存储哪个星期几发生的故障
           {
-               dimensions: [
+            dimensions: [
               '名称',
               '低于50%使用率',
               '使用率50%~80%',
               '使用率80%以上',
             ],
-            source: this.allData,
+            source: data,
+          },
+        ],
+
+        xAxis: {
+          type: 'value',
+          axisLabel: {
+            formatter: param => {
+              return `${param * 100}%`
+            },
+          },
+        },
+        yAxis: {
+          type: 'category',
+        },
+        series: [
+          {
+            type: 'bar',
+            stack: 'total',
+            seriesLayoutBy: 'row',
+            // emphasis: {
+            //   focus: 'series'
+            // },
+            // label: {
+            //   show: true,
+            // },
+          },
+          {
+            type: 'bar',
+            stack: 'total',
+            seriesLayoutBy: 'row',
+            // emphasis: {
+            //   focus: 'series'
+            // },
+            // label: {
+            //   show: true,
+            // },
+          },
+          {
+            type: 'bar',
+            stack: 'total',
+            seriesLayoutBy: 'row',
+            // emphasis: {
+            //   focus: 'series'
+            // },
+            // label: {
+            //   show: true,
+            // },
           },
         ],
       }
-      this.chartInstance.setOption(dataOption)
+
+      myChart.setOption(option)
+      this.chartInstance = myChart
+      // 将option赋值给chartOption，此时chartOption内容是一个对象
+      this.chartOption = option
+    },
+    // 向父组件传递图表option对象
+    sendOption() {
+      this.$bus.$emit('sendOption', this.chartOption)
+    },
+    changeChart(script) {
+      // 用echarts时，如果不存在DOM，就会报错，处理方法先检查是否DOM存在：
+      if (this.$refs.chartRef == null) {
+        return
+      }
+      // 用echarts时，如果存在DOM，就会报存在警告，处理方法删除DOM：
+      this.$echarts.dispose(this.$refs.chartRef)
+      try {
+        let func = new Function(
+          'echarts',
+          'ecStat',
+          `const ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples';var option;let myChart = echarts.init(this.$refs.chartRef);` +
+            script +
+            `myChart.clear();option && myChart.setOption(option);`
+        ).bind(this)
+        func(this.$echarts, this.$ecStat)
+      } catch (e) {
+        console.log(e)
+      }
     },
     // 当浏览器大小发生变化时候，调用方法完成屏幕适配
     screenAdapter() {
-      const titleFontSize = (this.$refs.SIURef.offsetWidth / 100) * 1.5
+      const titleFontSize = (this.$refs.chartRef.offsetWidth / 100) * 1.5
       // 和分辨率大小相关的配置项
       const adapterOption = {
         title: {

@@ -1,88 +1,48 @@
 <!--人员周报图-->
 <template>
   <div class="com-container">
-    <vue-xlsx-table @on-select-file="handleSelectedFile"
-      >上传excel</vue-xlsx-table>
-    <div class="com-chart" ref="wrRef"></div>
+    <div class="com-chart" ref="chartRef"></div>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      chartInstance: null,
-      data: null,
+      chartInstance: null, // echart图表实例
+      chartOption: '', // 图表配置信息option
+      optionList: [], // 保存的配置信息
     }
   },
 
   mounted() {
+    this.$bus.$emit('sendChartOptionName','人员周报表图表配置')
     this.initChart(),
-      this.getData(),
-      window.addEventListener('resize', this.screenAdapter),
+      this.sendOption(),
+      // 接收编辑器组件传来的新的图表配置信息代码
+      this.$bus.$on('sendScript', res => {
+        this.chartOption = res[0]
+        if (res[1] === null) {
+          this.changeChart(this.chartOption)
+        } else {
+          this.chartOption =
+            `let data = ` + JSON.stringify(res[1]) + ';' + res[0]
+          this.changeChart(this.chartOption)
+        }
+      })
+    this.saveOption()
+    window.addEventListener('resize', this.screenAdapter),
       // 在页面加载完成时候，主动进行屏幕适配
       this.screenAdapter()
   },
-
   methods: {
-    // 初始化对象
+    //   初始化图表
     initChart() {
-      this.chartInstance = this.$echarts.init(this.$refs.wrRef)
-      const initOption = {
-        title: {
-          text: '人员工作量分布图',
-          left: '1%',
-        },
-        legend: {},
-        tooltip: {
-          formatter: param => {
-            if (undefined === param.value['总工时']) {
-              return `工作时长: ${param.value['工作时长']}分钟 <br/>姓名: ${param.value['姓名']} <br/>开始时间: ${param.value['开始时间']}`
-            } else {
-              return `总工时: ${param.value['总工时']}小时 <br/>姓名: ${param.value['姓名']}`
-            }
-          },
-        },
-        yAxis: [
-          {
-            type: 'value',
-            name: '工作时长(分钟)',
-
-            interval: 50,
-            axisTick: {
-              alignWithLabel: true,
-            },
-          },
-          {
-            type: 'value',
-            name: '总时长(小时)',
-            max: 50,
-            interval: 10,
-            position: 'right',
-            splitLine: {
-              show: false,
-            },
-          },
-        ],
-        xAxis: {
-          type: 'value',
-          interval: 1,
-          position: 'bottom',
-          axisTick: {
-            //alignWithLabel: true,
-          },
-          
-        },
-      }
-      this.chartInstance.setOption(initOption)
-    },
-    getData() {
-        this.updateChart()
-    },
-    updateChart() {
-        let data = this.data
+      // 初始化echart实例
+      let myChart = this.$echarts.init(this.$refs.chartRef)
+      let option
+      let data = []
       // 计算 工作时长
       for (let rec of data) {
-        // console.log(rec['日期']+rec['姓名']+rec['工作内容']);
         rec['开始时间'] = rec['日期'] + ' ' + rec['开始时间']
         rec['结束时间'] = rec['日期'] + ' ' + rec['结束时间']
         rec['工作时长'] = Math.floor(
@@ -107,13 +67,11 @@ export default {
               60
           )
         }
-        // console.log(rec['姓名']+rec['工作时长']);
       }
-      //   console.log(data);
 
       // 计算 X轴 Y轴
-      let nameMap = []
-      let xAx = []
+      var nameMap = []
+      var xAx = []
       for (let rec of data) {
         if (-1 === nameMap.indexOf(rec['姓名'])) {
           let tmp = nameMap.length * 5
@@ -164,16 +122,16 @@ export default {
       }
 
       // 生成数据源和图表配置
-      let ds = [
+      var ds = [
         {
           dimensions: ['姓名', 'x', 'y', '工作时长', '开始日期'],
           source: data,
         },
       ]
-      let ss = []
-      let oldT = 0
-      let symbol = ['circle', 'rect', 'triangle', 'diamond', 'roundRect', 'pin']
-      let times = [30, 90, 120, 240, 480]
+      var ss = []
+      var oldT = 0
+      var symbol = ['circle', 'rect', 'triangle', 'diamond', 'roundRect']
+      var times = [30, 90, 120, 240, 480]
       for (let i = 0; i < times.length; i++) {
         let t = times[i]
         if (i === times.length - 1) {
@@ -200,6 +158,7 @@ export default {
           return str
         }
         legend()
+
         ss.push({
           name: legend(),
           datasetIndex: ss.length + 1,
@@ -249,10 +208,55 @@ export default {
           y: 'y',
         },
       })
-      const dataOption = {
+
+      option = {
+        title: {
+          text: '人员工作量分布图',
+          left: '1%',
+        },
+        legend: {},
+        tooltip: {
+          formatter: param => {
+            // console.log(this);
+            // return param.seriesName + ' <br/>'
+            //     + param.value["存储"] + ' <br/>'
+            //     + param.value["日期"] + ' <br/>';
+            if (undefined === param.value['总工时']) {
+              return `工作时长: ${param.value['工作时长']}分钟 <br/>姓名: ${param.value['姓名']} <br/>开始时间: ${param.value['开始时间']}`
+            } else {
+              return `总工时: ${param.value['总工时']}小时 <br/>姓名: ${param.value['姓名']}`
+            }
+          },
+        },
         dataset: ds,
+        yAxis: [
+          {
+            type: 'value',
+            name: '工作时长(分钟)',
+            interval: 50,
+            axisTick: {
+              alignWithLabel: true,
+            },
+          },
+          {
+            type: 'value',
+            name: '总时长(小时)',
+            max: 50,
+            interval: 10,
+            position: 'right',
+            splitLine: {
+              show: false,
+            },
+          },
+        ],
         xAxis: {
+          type: 'value',
+          interval: 1,
+          position: 'bottom',
           data: xAx,
+          axisTick: {
+            //alignWithLabel: true,
+          },
           axisLabel: {
             formatter: param => {
               let offset = 0
@@ -278,10 +282,39 @@ export default {
         },
         series: ss,
       }
-      this.chartInstance.setOption(dataOption)
+
+      myChart.setOption(option)
+      this.chartInstance = myChart
+      // 将option赋值给chartOption，此时chartOption内容是一个对象
+      this.chartOption = option
     },
+    // 向父组件传递图表option对象
+    sendOption() {
+      this.$bus.$emit('sendOption', this.chartOption)
+    },
+    changeChart(script) {
+      // 用echarts时，如果不存在DOM，就会报错，处理方法先检查是否DOM存在：
+      if (this.$refs.chartRef == null) {
+        return
+      }
+      // 用echarts时，如果存在DOM，就会报存在警告，处理方法删除DOM：
+      this.$echarts.dispose(this.$refs.chartRef)
+      try {
+        let func = new Function(
+          'echarts',
+          'ecStat',
+          `const ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples';var option;let myChart = echarts.init(this.$refs.chartRef);` +
+            script +
+            `myChart.clear();option && myChart.setOption(option);`
+        ).bind(this)
+        func(this.$echarts, this.$ecStat)
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    // 当浏览器大小发生变化时候，调用方法完成屏幕适配
     screenAdapter() {
-      const titleFontSize = (this.$refs.wrRef.offsetWidth / 100) * 1.5
+      const titleFontSize = (this.$refs.chartRef.offsetWidth / 100) * 1.5
       // 和分辨率大小相关的配置项
       const adapterOption = {
         title: {
@@ -294,11 +327,13 @@ export default {
       // 手动调用图表对象的resize才能产生效果
       this.chartInstance.resize()
     },
-    handleSelectedFile(convertedData) {
-        console.log(convertedData)
-      this.data = convertedData.body
-      this.initChart()
-      this.getData()
+    // 从编辑器组件那接收要保存的配置信息
+    saveOption() {
+      this.$bus.$on('saveOption', res => {
+        let item = { name: res[0], option: res[1] }
+        this.optionList.push(item)
+        
+      })
     },
   },
 }

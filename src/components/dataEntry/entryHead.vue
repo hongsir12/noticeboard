@@ -1,7 +1,9 @@
 <template>
   <div class="com-container">
     <div class="entryHead">
-      <div class="title"><span>{{title}}</span></div>
+      <div class="title">
+        <span>{{ title }}</span>
+      </div>
       <div class="date-container">
         <el-date-picker
           v-model="time"
@@ -9,6 +11,8 @@
           format="yyyy-MM-dd 第 WW 周"
           placeholder="选择周"
           :clearable="false"
+          ref="dpRef"
+          @change="changeTime"
         >
         </el-date-picker>
       </div>
@@ -19,23 +23,44 @@
 export default {
   data() {
     return {
-      time: new Date(),
-      title:'',
+      time: new Date(), //当天日期时间
+      title: '',
+      currentWeek: '',  // 当天所处周数
+      startOfWeek: '',  // 当周第一天
+      endOfWeek: '',    // 当周最后一天
     }
   },
-  props:['dataEntryTitle'],
+  props: ['dataEntryTitle'],
+  created() {},
   mounted() {
-    this.title = this.dataEntryTitle;
-    // this.$bus.$on('sendTitle',(val)=>{
-    //   this.title = val;
-    // })
+    this.getDateRange(this.time)
+    this.title = this.dataEntryTitle
+    this.$emit('sendCurrentWeek', [this.currentWeek,this.startOfWeek,this.endOfWeek])
   },
-  watch:{
-    title:function(val){
+  watch: {
+    time: function(newVal) {
+      newVal = newVal.format('yyyy-MM-dd')
+      this.getDateRange(newVal)
+      this.$emit('sendCurrentWeek',  [this.currentWeek,this.startOfWeek,this.endOfWeek])
+    },
+  },
+  methods: {
+    getDateRange(time) {
+      this.currentWeek = this.$moment(time).isoWeek()
+      this.startOfWeek = this.$moment(time)
+        .startOf('week')
+        .toDate()
+        .format('yyyy-MM-dd')
+      this.endOfWeek = this.$moment(time)
+        .endOf('week')
+        .toDate()
+        .format('yyyy-MM-dd')
+    },
+    changeTime(val){
       
     }
+
   },
-  methods: {},
 }
 </script>
 <style lang="less" scoped>

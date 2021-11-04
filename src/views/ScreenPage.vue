@@ -1,43 +1,45 @@
 <template>
-  <div class="screen-container">
-    <dv-loading v-if="loading">Loading...</dv-loading>
-    <!-- 屏幕顶部 -->
-    <header class="screen-header" id="capture">
-      <dv-decoration-10 class="dv-dec-10" />
+  <div class="com-page">
+    <div class="screen-container">
+      <dv-loading v-if="loading">Loading...</dv-loading>
+      <!-- 屏幕顶部 -->
+      <header class="screen-header" id="capture">
+        <dv-decoration-10 class="dv-dec-10" />
 
-      <!-- 大屏标题 -->
-      <div class="header-title">
-        <dv-decoration-8 class="dv-dec-8" />
-        <div class="title">
-          <span class="title-text">南中心系统与设备运行情况</span>
+        <!-- 大屏标题 -->
+        <div class="header-title">
+          <dv-decoration-8 class="dv-dec-8" />
+          <div class="title">
+            <span class="title-text">南中心系统与设备运行情况</span>
+          </div>
+          <dv-decoration-8 class="dv-dec-8" :reverse="true" />
         </div>
-        <dv-decoration-8 class="dv-dec-8" :reverse="true" />
+
+        <dv-decoration-10 class="dv-dec-10-s" />
+
+        <!-- 选择周次下拉框 -->
+        <div class="selectWeek">
+          <el-date-picker
+            v-model="time"
+            type="week"
+            format="yyyy-MM-dd 第 WW 周"
+            placeholder="选择周"
+            :clearable="false"
+          >
+          </el-date-picker>
+        </div>
+
+        <!-- 截图按钮 -->
+        <div class="screenshot" @click="screenshot()">
+          <span class="iconfont icon-camera-full"></span>
+        </div>
+      </header>
+
+      <!-- 屏幕主体 -->
+      <div class="screen-body">
+        <noticeboard></noticeboard>
+        <!-- <weeklyReport></weeklyReport> -->
       </div>
-
-      <dv-decoration-10 class="dv-dec-10-s" />
-
-      <!-- 选择周次下拉框 -->
-      <div class="selectWeek">
-        <el-date-picker
-          v-model="time"
-          type="week"
-          format="yyyy-MM-dd 第 WW 周"
-          placeholder="选择周"
-          :clearable = 'false'
-        >
-        </el-date-picker>
-      </div>
-
-      <!-- 截图按钮 -->
-      <div class="screenshot" @click="screenshot()">
-        <span class="iconfont icon-camera-full"></span>
-      </div>
-    </header>
-
-    <!-- 屏幕主体 -->
-    <div class="screen-body">
-      <noticeboard></noticeboard>
-      <!-- <weeklyReport></weeklyReport> -->
     </div>
   </div>
 </template>
@@ -57,7 +59,7 @@ export default {
         devBarAndPie: false,
         devLine: false,
       },
-      time:new Date(),     
+      time: new Date(),
     }
   },
 

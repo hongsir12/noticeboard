@@ -17,10 +17,10 @@ export default {
 
   mounted() {
     this.initChart(),
-    this.getData(),
-    window.addEventListener('resize', this.screenAdapter),
-    // 在页面加载完成时候，主动进行屏幕适配
-    this.screenAdapter()
+      this.getData(),
+      window.addEventListener('resize', this.screenAdapter),
+      // 在页面加载完成时候，主动进行屏幕适配
+      this.screenAdapter()
   },
 
   methods: {
@@ -154,7 +154,7 @@ export default {
           ])
         }
       }
-      
+
       this.updateChart()
     },
     updateChart() {
@@ -184,6 +184,7 @@ export default {
           },
         },
       }
+      // console.log(this.$refs.diskIORef);
       this.chartInstance.setOption(adapterOption)
       // 手动调用图表对象的resize才能产生效果
       this.chartInstance.resize()

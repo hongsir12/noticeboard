@@ -8,7 +8,19 @@ import {
   Select,
   Option,
   Input,
+  Upload,
+  Menu,
+  MenuItem,
+  Submenu,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Switch,
+  Message,
+  MessageBox
 } from 'element-ui'
+import jq from 'jquery'
+import store from './store'
 import App from './App.vue'
 import router from './router'
 // 将自动注册所有组件为全局组件
@@ -17,15 +29,43 @@ import dataV from '@jiaminghi/data-view'
 import './assets/font/iconfont.css'
 import vueXlsxTable from 'vue-xlsx-table'
 import moment from 'moment'
+import ace from 'ace-builds'
 // 引入全局css
 import './assets/css/global.less'
+import componentsInstall from '@/components/install'
+import {request} from '@/utils/request.js'
+window.$ = jq
 // 将全局的echarts对象挂载到vue的原型对象上
 Vue.prototype.$echarts = window.echarts
 // 将全局的moment对象挂载到vue的原型对象上
 Vue.prototype.$moment = moment
 Vue.prototype.$bus = new Vue()
+// Vue.prototype.$erd = ElementResizeDetectorMaker()
+Vue.prototype.$request = request
+Vue.prototype.$message = Message
+Vue.prototype.$messageBox = MessageBox
 Vue.config.productionTip = false
 Vue.use(vueXlsxTable,{rABS:false})
+Vue.use(ace)
+Vue.use(componentsInstall)
+// 全局注册
+Vue.use(dataV)
+Vue.use(DatePicker)
+Vue.use(Table)
+Vue.use(Card)
+Vue.use(Button)
+Vue.use(TableColumn)
+Vue.use(Select)
+Vue.use(Option)
+Vue.use(Input)
+Vue.use(Upload)
+Vue.use(Menu)
+Vue.use(MenuItem)
+Vue.use(Submenu)
+Vue.use(Dropdown)
+Vue.use(DropdownMenu)
+Vue.use(DropdownItem)
+Vue.use(Switch)
 // 转换时间格式挂载到Date原型对象上
 Date.prototype.format = function (fmt) { //author: meizz   
   var o = {
@@ -55,18 +95,8 @@ Number.prototype.toHHmmss = function () {
   if (seconds < 10) {seconds = "0"+seconds;}
   return hours+':'+minutes+':'+seconds;
 }
-// 全局注册
-Vue.use(dataV)
-Vue.use(DatePicker)
-Vue.use(Table)
-Vue.use(Card)
-Vue.use(Button)
-Vue.use(TableColumn)
-Vue.use(Select)
-Vue.use(Option)
-Vue.use(Input)
-
 new Vue({
   router,
+  store,
   render: h => h(App),
 }).$mount('#app')

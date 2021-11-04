@@ -1,11 +1,13 @@
 <!---->
 <template>
   <div class="com-page">
-      <weeklyReport></weeklyReport>
+      <weeklyReport2></weeklyReport2>
   </div>
 </template>
 <script>
-import weeklyReport from '@/components/weeklyReport/weeklyReport'
+// import weeklyReport from '@/components/weeklyReport/weeklyReport'
+import weeklyReport2 from '@/components/weeklyReport/weeklyReport2'
+
 export default {
   data() {
     return {}
@@ -15,7 +17,7 @@ export default {
 
   methods: {},
   components:{
-      weeklyReport:weeklyReport,
+      weeklyReport2,
   }
 }
 </script>

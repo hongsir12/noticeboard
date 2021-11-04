@@ -1,46 +1,53 @@
-html,body,#app{
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
 }
-.com-page{
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+.com-page {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
-.com-container{
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+.com-container {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
-.com-chart{
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    
+.editor-area {
+  width: 30%;
+  height: 100%;
+}
+.com-chart {
+
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .screen-container {
+  width: 100%;
+  height: 100%;
+  padding: 0 200px;
+  background-color: #f2f3f5;
+  color: #111;
+  box-sizing: border-box;
+  // background-image: url('../assets/pageBg.png');
+  // background-size: cover;
+  // background-position: center center;
+  .screen-header {
+    width: 100%;
+    height: 64px;
+  }
+  .screen-body {
     width: 100%;
     height: 100%;
-    padding: 0 200px;
-    background-color: #f2f3f5;
-    color: #111;
-    box-sizing: border-box;
-    // background-image: url('../assets/pageBg.png');
-    // background-size: cover;
-    // background-position: center center;
-    .screen-header {
-      width: 100%;
-      height: 64px;
-    }
-    .screen-body {
-      width: 100%;
-      height: 100%;
-    }
   }
-canvas{
-    border-radius: 20px;
+}
+canvas {
+  border-radius: 20px;
 }

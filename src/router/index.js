@@ -11,23 +11,35 @@ import weeklyReportPage from '@/views/demoPage/weeklyReport/weeklyReportPage.vue
 import ScreenPage from '@/views/ScreenPage.vue'
 import DataEntryPage from '@/views/dataEntry/DataEntryPage.vue'
 import wrDataEntryPage from '@/views/dataEntry/WeeklyReportDataEntryPage.vue'
-
+import editorPage from '@/views/editorPage/editorPage.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/', redirect: '/screen' },
-  { path: '/screen', component: ScreenPage },
+  { path: '/', redirect: '/editorPage' },
+  // { path: '/screen', component: ScreenPage },
   // { path: '/devLinePage', component: devLinePage },
   // { path: '/rsLinePage', component: rsLinePage },
   // { path: '/devBarAndPiePage', component: devBarAndPiePage },
   // { path: '/rsBarPage', component: rsBarPage },
-  { path: '/dataEntry', component: DataEntryPage },
-  { path: '/diskIOPage', component: diskIOPage },
-  { path: '/SIUPage', component: SwitchInterfaceUtilizationPage },
-  { path: '/fdPage', component: FaultDistributionPage },
-  { path: '/wrPage', component: weeklyReportPage },
-  { path: '/wrDataEntry', component: wrDataEntryPage },
-
+  // { path: '/dataEntry', component: DataEntryPage },
+  // { path: '/diskIOPage', component: diskIOPage },
+  // { path: '/SIUPage', component: SwitchInterfaceUtilizationPage },
+  // { path: '/fdPage', component: FaultDistributionPage },
+  // { path: '/wrPage', component: weeklyReportPage },
+  // { path: '/wrDataEntry', component: wrDataEntryPage },
+  {
+    path: '/editorPage',
+    component: editorPage,
+    children: [
+      { path: '/diskIOPage', component: diskIOPage },
+      { path: '/SIUPage', component: SwitchInterfaceUtilizationPage },
+      { path: '/fdPage', component: FaultDistributionPage },
+      { path: '/screen', component: ScreenPage },
+      { path: '/wrPage', component: weeklyReportPage },
+      { path: '/dataEntry', component: DataEntryPage },
+      { path: '/wrDataEntry', component: wrDataEntryPage },
+    ],
+  },
 ]
 
 const router = new VueRouter({

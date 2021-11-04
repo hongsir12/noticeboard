@@ -1,11 +1,13 @@
 <!---->
 <template>
   <div class="com-page">
-      <diskIO></diskIO>
+      <diskIO2></diskIO2>
   </div>
 </template>
 <script>
 import diskIO from '@/components/storageReport/diskIO'
+import diskIO2 from '@/components/storageReport/diskIO2'
+
 export default {
   data() {
     return {}
@@ -15,7 +17,7 @@ export default {
 
   methods: {},
   components:{
-      diskIO:diskIO,
+      diskIO2,
   }
 }
 </script>

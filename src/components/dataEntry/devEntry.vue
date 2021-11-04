@@ -1,7 +1,18 @@
 <template>
   <div class="com-container">
-    <div class="typeNav">设备运行情况</div>
+    <div class="typeNav">
+      <span>设备运行情况</span>
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-plus"
+        :disabled="isDisabled"
+        @click="addDevData"
+        >新增</el-button
+      >
+    </div>
     <div class="devEntryContainer">
+      <!-- 左侧周报区 -->
       <div class="left">
         <el-card class="box-card">
           <div slot="header" class="clearfix boardHeader">
@@ -26,9 +37,12 @@
             v-model="textarea1"
           >
           </el-input>
-          <el-button type="primary" class="saveBtn">保存</el-button>
+          <el-button type="primary" class="saveBtn" @click="saveReport"
+            >保存</el-button
+          >
         </el-card>
       </div>
+      <!-- 右侧表格区 -->
       <div class="right">
         <el-table
           :data="tableData"
@@ -37,7 +51,7 @@
           style="width: 100%"
           height="100%"
           slot="empty"
-          @header-click="headerClick"
+          ref="tableRef"
         >
           <el-table-column
             prop="date"
@@ -86,11 +100,6 @@
             </template>
           </el-table-column>
           <el-table-column fixed="right" align="center">
-            <template slot="header" slot-scope="">
-              <el-button type="primary" size="small" icon="el-icon-plus" :disabled="tableData.length === 7 ? true:false "
-               >新增</el-button
-              >
-            </template>
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -116,7 +125,7 @@
   </div>
 </template>
 <script>
-import { Debounce } from '@/utils/debounce'
+// import { Debounce } from '@/utils/debounce'
 export default {
   data() {
     return {
@@ -140,213 +149,52 @@ export default {
       pDevData: null, // 物理设备数据
       osData: null, // 操作系统数据
       mvData: null, // mv线路数据
-      textarea1: '',
+      textarea1: '', // 周报内容
+      disabled: false,
     }
   },
-
+  props: ['currentWeek'], //周数
+  created() {},
   mounted() {
-    this.getData()
     this.changeOption()
   },
+  computed: {
+    isDisabled() {
+      this.$nextTick(() => {
+        this.$forceUpdate()
+      })
+      return this.tableData.length >= 7
+    },
+  },
   watch: {
-    // 监听文本框输入内容
-    textarea1: Debounce(function(val) {
-      console.log(this.tableData.length)
-    }, 1000),
+    // 监听父组件传来的新周数
+    currentWeek: function(newVal) {
+      // console.log(newVal);
+      this.getData()
+    },
   },
   methods: {
-    getData() {
-      let data = [
-        {
-          type: '物理设备',
-          normal: 2000,
-          focus: 50,
-          err: 5,
-          date: '2021-10-10',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 58,
-          err: 1,
-          date: '2021-10-11',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 48,
-          err: 2,
-          date: '2021-10-12',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 47,
-          err: 7,
-          date: '2021-10-13',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 54,
-          err: 4,
-          date: '2021-10-14',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 47,
-          err: 4,
-          date: '2021-10-15',
-          user: 'abc',
-          iseditor: false,
-        },
-        // {
-        //   type: '物理设备',
-        //   normal: 200,
-        //   focus: 60,
-        //   err: 3,
-        //   date: '2021-10-16',
-        //   user: 'abc',
-        //   iseditor: false,
-        // },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 110,
-          err: 20,
-          date: '2021-10-10',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 102,
-          err: 11,
-          date: '2021-10-11',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 77,
-          err: 18,
-          date: '2021-10-12',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 98,
-          err: 19,
-          date: '2021-10-13',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 101,
-          err: 21,
-          date: '2021-10-14',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 88,
-          err: 16,
-          date: '2021-10-15',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 107,
-          err: 19,
-          date: '2021-10-16',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 27,
-          err: 1,
-          date: '2021-10-10',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 36,
-          err: 0,
-          date: '2021-10-11',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 17,
-          err: 2,
-          date: '2021-10-12',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 28,
-          err: 4,
-          date: '2021-10-13',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 36,
-          err: 5,
-          date: '2021-10-14',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 17,
-          err: 1,
-          date: '2021-10-15',
-          user: 'abc',
-          iseditor: false,
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 29,
-          err: 4,
-          date: '2021-10-16',
-          user: 'abc',
-          iseditor: false,
-        },
-      ]
+    // 获取表格数据和周报内容
+    async getData() {
+      let data = [] //该周全部数据
+      // 请求参数
+      let params = {
+        data: [
+          {
+            report_type: '设备运行情况周报数据',
+            // 根据当周头末时间查询该周数据
+            starttime: this.currentWeek[1],
+            overtime: this.currentWeek[2],
+          },
+        ],
+      }
+      let res = await this.$request('apiQuery', params, 'post')
+      res = res.data.list
+      for (let rec of res) {
+        rec = JSON.parse(rec.report_data)
+        rec.iseditor = false
+        data.push(rec)
+      }
       let pDevData = data.filter((value, index, arr) => {
         return value.type == '物理设备'
       })
@@ -360,38 +208,215 @@ export default {
       this.osData = osData
       this.mvData = mvData
       if (this.value === '物理设备') {
-        this.tableData = pDevData
+        this.tableData.splice(0, this.tableData.length, ...pDevData)
       } else if (this.value === '操作系统') {
-        this.tableData = osData
+        this.tableData.splice(0, this.tableData.length, ...osData)
       } else if (this.value === 'MV线路') {
-        this.tableData = mvData
+        this.tableData.splice(0, this.tableData.length, ...mvData)
       }
+      // 更新完表格数据，用doLayout重新加载表格
+      this.$nextTick(() => {
+        this.$refs.tableRef.doLayout()
+      })
+      // 获取周报内容
+      let reportParams = {
+        data: [
+          {
+            report_type: '设备运行情况周报',
+            conditions: [
+              {
+                //根据第几年第几周来查询周报内容
+                week:
+                  this.$moment(this.currentWeek[1]).format('YYYY') +
+                  ' ' +
+                  this.currentWeek[0],
+              },
+            ],
+          },
+        ],
+      }
+      let reportData = await this.$request('apiQuery', reportParams, 'post')
+      let reportText
+      // console.log(JSON.parse(reportData.data.list[0].report_data).content);
+      if (reportData.data.total) {
+        reportText = JSON.parse(reportData.data.list[0].report_data).content
+      } else {
+        reportText = ''
+      }
+      this.textarea1 = reportText
     },
+    // 切换下拉选项
     changeOption(val) {
       if (val === '操作系统') {
-        this.tableData = this.osData
+        this.tableData.splice(0, this.tableData.length, ...this.osData)
       } else if (val === '物理设备') {
-        this.tableData = this.pDevData
+        this.tableData.splice(0, this.tableData.length, ...this.pDevData)
       } else if (val === 'MV线路') {
-        this.tableData = this.mvData
+        this.tableData.splice(0, this.tableData.length, ...this.mvData)
       }
     },
-    edit(row, index) {
+    // 保存周报
+    async saveReport() {
+      // 先查询该周周报，若没有则插入，若有则进行更新
+      let queryParams = {
+        data: [
+          {
+            report_type: '设备运行情况周报',
+            conditions: [
+              {
+                //根据第几年第几周来查询周报内容
+                week:
+                  this.$moment(this.currentWeek[1]).format('YYYY') +
+                  ' ' +
+                  this.currentWeek[0],
+              },
+            ],
+          },
+        ],
+      }
+      let queryData = await this.$request('apiQuery', queryParams, 'post')
+      // 是否查询到
+      let hasReport = queryData.data.total
+      // 如果没有查到，则插入该周报信息
+      if (!hasReport) {
+        let params = {
+          data: [
+            {
+              report_type: '设备运行情况周报',
+              report_data: {
+                content: this.textarea1,
+                week:
+                  this.$moment(this.currentWeek[1]).format('YYYY') +
+                  ' ' +
+                  this.currentWeek[0],
+              },
+              report_time: this.$moment(this.currentWeek[1]).format(
+                'YYYY-MM-DD'
+              ),
+            },
+          ],
+        }
+        let { data } = await this.$request('apiInsert', params, 'post')
+      } else {
+        // 查到了则获取唯一id，根据id修改
+        // console.log(queryData.data.list[0].report_id);
+        let report_id = queryData.data.list[0].report_id
+        let updateParams = {
+          data: [
+            {
+              report_id: report_id,
+              report_data: {
+                content: this.textarea1,
+                week:
+                  this.$moment(this.currentWeek[1]).format('YYYY') +
+                  ' ' +
+                  this.currentWeek[0],
+              },
+            },
+          ],
+        }
+        let data = await this.$request('apiUpdate', updateParams, 'post')
+      }
+      this.$message({
+          message: '保存成功',
+          type: 'success',
+        })
+    },
+    // 点击修改数据按钮
+    async edit(row, index) {
+      // 查询参数
+      let params = {
+        data: [
+          {
+            report_type: '设备运行情况周报数据',
+            // 根据日期和类型查询
+            conditions: { type: row.type, date: row.date },
+          },
+        ],
+      }
+      let res = await this.$request('apiQuery', params, 'post')
+      // 获取当前数据的唯一id
+      let report_id = res.data.list[0].report_id
+      // 添加到对象属性中
+      for (let rec of this.tableData) {
+        if (rec.date == row.date) {
+          rec.report_id = report_id
+        }
+      }
       row.iseditor = true
     },
-    save(row, index) {
+    // 点击保存数据按钮
+    async save(row, index) {
+      let params = {
+        data: [
+          {
+            report_id: row.report_id,
+            report_data: {
+              date: row.date,
+              type: row.type,
+              user: row.user,
+              normal: row.normal,
+              focus: row.focus,
+              err: row.err,
+            },
+          },
+        ],
+      }
+      let res = await this.$request('apiUpdate', params, 'post')
       row.iseditor = false
     },
-    headerClick(column,  event){
-      console.log(column);
-    }
+    // 新增设备数据
+    async addDevData() {
+      let date
+      // 如果当周表格数据还未录入过，则当周第一条数据的日期为该周第一天
+      if (this.tableData.length === 0) {
+        date = this.currentWeek[1]
+      } else {
+        //否则，则在前一条数据的日期往后一天
+        date = this.$moment(this.tableData[this.tableData.length - 1].date)
+          .add(1, 'days')
+          .format('YYYY-MM-DD')
+      }
+      // 要插入的数据格式
+      let obj = {
+        type: this.value,
+        normal: Math.floor(Math.random() * (5000 - 4000) + 4000),
+        focus: Math.floor(Math.random() * (3000 - 2000) + 2000),
+        err: Math.floor(Math.random() * 40),
+        date: date,
+        user: 'kkk',
+      }
+      let params = {
+        data: [
+          {
+            report_type: '设备运行情况周报数据',
+            report_data: obj,
+            report_time: date,
+          },
+        ],
+      }
+      let data = await this.$request('apiInsert', params, 'post')
+      // console.log(data)
+      obj.iseditor = false
+      if (this.value == '物理设备') {
+        this.tableData.push(obj)
+      } else if (this.value == '操作系统') {
+        this.tableData.splice(this.tableData.length, 0, obj)
+      } else if (this.value == 'MV线路') {
+        this.tableData.splice(this.tableData.length, 0, obj)
+      }
+      // 更新完表格数据，用doLayout重新加载表格
+      this.$nextTick(() => {
+        this.$refs.tableRef.doLayout()
+      })
+    },
   },
 }
 </script>
 <style lang="less" scoped>
-.typeNav{
+.typeNav {
   align-items: center;
-  padding:10px 20px;
+  padding: 10px 20px;
   font-size: 24px;
 }
 .devEntryContainer {

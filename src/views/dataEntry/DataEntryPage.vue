@@ -2,19 +2,23 @@
 <template>
   <div class="screen-container">
     <div class="screen-header">
-      <entryHead :dataEntryTitle="dataEntryTitle"></entryHead>
+      <entryHead
+        :dataEntryTitle="dataEntryTitle"
+        @sendCurrentWeek="getCurrentWeek"
+        ref="entryHeadRef"
+      ></entryHead>
     </div>
     <div class="screen-body">
       <div class="top">
-          <!-- <dv-border-box-11 :color="['black', 'black']"  title="运行情况"> -->
-              <devEntry></devEntry>
-          <!-- </dv-border-box-11> -->
-          </div>
+        <!-- <dv-border-box-11 :color="['black', 'black']"  title="运行情况"> -->
+        <devEntry :currentWeek="[currentWeek,startOfWeek,endOfWeek]"></devEntry>
+        <!-- </dv-border-box-11> -->
+      </div>
       <div class="bottom">
         <!-- <dv-border-box-11 :color="['black', 'black']"  title="资源情况"> -->
-          <rsEntry></rsEntry>
+        <rsEntry :currentWeek="[currentWeek,startOfWeek,endOfWeek]"></rsEntry>
         <!-- </dv-border-box-11> -->
-        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -26,17 +30,25 @@ import rsEntry from '@/components/dataEntry/rsEntry'
 export default {
   data() {
     return {
-      dataEntryTitle:'南中心系统与设备运行情况数据录入'
+      dataEntryTitle: '南中心系统与设备运行情况数据录入',
+      currentWeek: '', // 当天所处周数
+      startOfWeek: '', // 当周第一天
+      endOfWeek: '', // 当周最后一天
     }
   },
-
+  created() {},
   mounted() {},
-
-  methods: {},
+  methods: {
+    getCurrentWeek(res) {
+      this.currentWeek = res[0]
+      this.startOfWeek = res[1]
+      this.endOfWeek = res[2]
+    },
+  },
   components: {
     entryHead,
     devEntry,
-    rsEntry
+    rsEntry,
   },
 }
 </script>
@@ -62,18 +74,16 @@ export default {
       width: 100%;
       height: 45%;
       // border: 1px solid #111;
-      border-radius:10px;
-      box-shadow:  8px 8px 16px #bebebe,
-             -8px -8px 16px #ffffff;
+      border-radius: 10px;
+      box-shadow: 8px 8px 16px #bebebe, -8px -8px 16px #ffffff;
     }
     .bottom {
       width: 100%;
       height: 45%;
       margin-top: 10px;
       // border: 1px solid #111;
-      border-radius:10px;
-      box-shadow:  8px 8px 16px #bebebe,
-             -8px -8px 16px #ffffff;
+      border-radius: 10px;
+      box-shadow: 8px 8px 16px #bebebe, -8px -8px 16px #ffffff;
     }
   }
 }
