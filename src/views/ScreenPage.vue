@@ -17,7 +17,7 @@
 
         <dv-decoration-10 class="dv-dec-10-s" />
 
-        <!-- 选择周次下拉框 -->
+        <!-- 选择周次下拉框
         <div class="selectWeek">
           <el-date-picker
             v-model="time"
@@ -27,7 +27,7 @@
             :clearable="false"
           >
           </el-date-picker>
-        </div>
+        </div> -->
 
         <!-- 截图按钮 -->
         <div class="screenshot" @click="screenshot()">
@@ -37,7 +37,7 @@
 
       <!-- 屏幕主体 -->
       <div class="screen-body">
-        <noticeboard></noticeboard>
+        <noticeboard :currentWeek="currentWeek"></noticeboard>
         <!-- <weeklyReport></weeklyReport> -->
       </div>
     </div>
@@ -62,8 +62,21 @@ export default {
       time: new Date(),
     }
   },
+  props: ['currentWeek'],
 
+  watch: {
+    // 监听父组件传来的新周数
+    currentWeek: function(newVal, oldVal) {
+      window.addEventListener('resize', this.screenAdapter)
+      this.screenAdapter()
+    },
+  },
   mounted() {
+    this.$emit('sendCurrentWeek', [
+      this.currentWeek,
+      this.startOfWeek,
+      this.endOfWeek,
+    ])
     this.cancelLoading()
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()

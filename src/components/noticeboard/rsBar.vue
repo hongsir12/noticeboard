@@ -14,10 +14,17 @@ export default {
       storageData: null, //存储数据
     }
   },
-
+  props: ['currentWeek'], //周数
+  watch: {
+    // 监听父组件传来的新周数
+    currentWeek: function(newVal, oldVal) {
+      this.getData()
+    },
+  },
   mounted() {
-    this.initChart()
     this.getData()
+    this.initChart()
+    
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
@@ -78,7 +85,6 @@ export default {
                   textStyle: {
                     //数值样式
                     color: 'white',
-                    
                   },
                 },
               },
@@ -95,7 +101,6 @@ export default {
                   textStyle: {
                     //数值样式
                     color: 'white',
-                    
                   },
                 },
               },
@@ -112,7 +117,6 @@ export default {
                   textStyle: {
                     //数值样式
                     color: 'white',
-                    
                   },
                 },
               },
@@ -123,177 +127,24 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    getData() {
-      let data = [
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 100,
-          consumed: 90,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 100,
-          consumed: 90,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 100,
-          consumed: 90,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 100,
-          consumed: 90,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 100,
-          consumed: 90,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 100,
-          consumed: 90,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 100,
-          consumed: 90,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-      ]
+    async getData() {
+      let data = []
+      let params = {
+        data: [
+          {
+            report_type: '资源使用情况周报数据',
+            // 根据当周头末时间查询该周数据
+            starttime: this.currentWeek[1],
+            overtime: this.currentWeek[2],
+          },
+        ],
+      }
+      let { data: tabledata } = await this.$request('apiQuery', params, 'post')
+      tabledata = tabledata.list
+      for (let rec of tabledata) {
+        rec = JSON.parse(rec.report_data)
+        data.push(rec)
+      }
       this.cpuData = data.filter((value, index, arr) => {
         return value.type == 'CPU(核)'
       })
@@ -349,7 +200,7 @@ export default {
     screenAdapter() {
       // 处理屏幕适配相关配置项
       const titleFontSize = (this.$refs.rsBarRef.offsetWidth / 100) * 3
-      const labelFontSize = (this.$refs.rsBarRef.offsetWidth /100)*2
+      const labelFontSize = (this.$refs.rsBarRef.offsetWidth / 100) * 2
       const adapterOption = {
         title: {
           textStyle: {

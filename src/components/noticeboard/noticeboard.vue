@@ -7,7 +7,7 @@
       >
         <dv-border-box-12>
           <!--一周设备运行折线图-->
-          <devLine ref="devLine"></devLine>
+          <devLine ref="devLine" :currentWeek="currentWeek"></devLine>
           <div class="resize">
             <span
               @click="changeSize('devLine', 0)"
@@ -27,7 +27,7 @@
       >
         <dv-border-box-12>
           <!--一周资源使用折线图-->
-          <rsLine ref="rsLine"></rsLine>
+          <rsLine ref="rsLine" :currentWeek="currentWeek"></rsLine>
           <div class="resize">
             <span
               @click="changeSize('rsLine', 1)"
@@ -49,7 +49,10 @@
       >
         <dv-border-box-12>
           <!--一周设备故障优化柱形图-->
-          <devBarAndPie ref="devBarAndPie"></devBarAndPie>
+          <devBarAndPie
+            ref="devBarAndPie"
+            :currentWeek="currentWeek"
+          ></devBarAndPie>
           <div class="resize">
             <span
               @click="changeSize('devBarAndPie', 2)"
@@ -69,7 +72,7 @@
       >
         <dv-border-box-12>
           <!--一周资源消耗统计柱形图-->
-          <rsBar ref="rsBar"></rsBar>
+          <rsBar ref="rsBar" :currentWeek="currentWeek"></rsBar>
           <div class="resize">
             <span
               @click="changeSize('rsBar', 3)"
@@ -87,12 +90,12 @@
     <section class="screen-right">
       <div id="right-top">
         <dv-border-box-13>
-          <devWeekly ref="devWeeklyRef"></devWeekly>
+          <devWeekly ref="devWeeklyRef" :currentWeek="currentWeek"></devWeekly>
         </dv-border-box-13>
       </div>
       <div id="right-bottom">
         <dv-border-box-13>
-          <rsWeekly ref="rsWeeklyRef"></rsWeekly>
+          <rsWeekly ref="rsWeeklyRef" :currentWeek="currentWeek"></rsWeekly>
         </dv-border-box-13>
       </div>
     </section>
@@ -108,8 +111,8 @@ import rsWeekly from '@/components/noticeboard/rsWeekly'
 export default {
   data() {
     return {
-      chartInstance:null,
-        loading: true,
+      chartInstance: null,
+      loading: true,
       // 定义每一个图表的全屏状态
       fullScreenStatus: {
         rsBar: false,
@@ -117,14 +120,22 @@ export default {
         devBarAndPie: false,
         devLine: false,
       },
-      time:new Date(),     
+      time: new Date(),
     }
   },
-
-  mounted() {},
-
+  props: ['currentWeek'], //周数
+  mounted() {
+    window.addEventListener('resize', this.screenAdapter)
+    this.screenAdapter()
+  },
+  watch: {
+    // 监听父组件传来的新周数
+    currentWeek: function(newVal, oldVal) {
+      
+    },
+  },
   methods: {
-      // 缩放全屏视图切换
+    // 缩放全屏视图切换
     changeSize(chartName, n) {
       this.fullScreenStatus[chartName] = !this.fullScreenStatus[chartName]
       let dvBorderSvgContainer = document.getElementsByClassName(
@@ -141,7 +152,7 @@ export default {
         this.$refs[chartName].screenAdapter()
       })
     },
-      screenAdapter() {
+    screenAdapter() {
       const headTitleFontSize =
         (document.getElementById('capture').offsetWidth / 100) * 1.5
       let headTitle = document.getElementsByClassName('title-text')[0]

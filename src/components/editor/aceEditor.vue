@@ -15,7 +15,7 @@
           历史配置
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-for="(item, i) in optionList" :key="i">{{
+          <el-dropdown-item v-for="(item, i) in optionList" :key="i" @click.native="setHistoryOption(item)">{{
             item.optionName
           }}</el-dropdown-item>
         </el-dropdown-menu>
@@ -68,10 +68,12 @@ export default {
     })
     this.scriptStr = this.option
     this.setAceEditorValue()
+    this.getChartOptionList()
   },
   watch: {
     // 监听父组件传来的新的编辑器内容字符串
     option: function(newVal, oldVal) {
+      console.log(123);
       // 将新值，也就是option编辑器内容字符串，赋值给scriptStr
       this.scriptStr = newVal
       // 设置编辑器内容
@@ -100,7 +102,7 @@ export default {
     },
     // 点击保存按钮保存当前配置
     saveChartOption() {
-      console.log(this.chartName)
+      // console.log(this.chartName)
       // 获取编辑器代码内容字符串
       let currentOption = this.aceEditor.getValue()
       this.$messageBox
@@ -111,7 +113,6 @@ export default {
         .then(async ({ value }) => {
           // 将保存的配置名和代码传给图表组件
           // this.$bus.$emit('saveOption',[value,currentOption]);
-
           let params = {
             data: [
               {
@@ -138,7 +139,29 @@ export default {
           })
         })
     },
-    
+    // 获取图表保存历史配置
+    async getChartOptionList(){
+      let params = {
+        data:[{
+          report_type: '全部已保存图表配置',
+          conditions:[{chartName: this.chartName}]
+        }]
+      }
+      let {data} = await this.$request('apiQuery', params, 'post')
+      let ChartOptionData = data.list
+      for(let rec of ChartOptionData){
+        // 获取配置名称
+        let optionName = JSON.parse(rec.report_data).optionName;
+        // 获取配置字符串
+        let content = JSON.parse(rec.report_data).content
+        let obj = {optionName:optionName,content:content}
+        this.optionList.push(obj)
+      }
+      // console.log(this.optionList);
+    },
+    setHistoryOption(value){
+      this.aceEditor.setValue(value.content, 1)
+    },
     // 清除excel数据
     resetChartData() {
       this.data = null

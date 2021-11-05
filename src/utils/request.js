@@ -2,7 +2,9 @@ import axios from 'axios'
 export function request(url, params, type) {
   // 请求超过30秒则判定为超时
   const instance = axios.create({
-    baseURL: 'http://192.168.137.140:8002/expand/report/',
+    // baseURL: 'http://192.168.137.140:8002/expand/report/',
+    baseURL: 'http://47.107.124.106:8002/expand/report/',
+
     timeout: 30000,
     withCredentials: false,
   })

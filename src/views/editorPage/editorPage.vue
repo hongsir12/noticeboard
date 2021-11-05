@@ -1,6 +1,7 @@
 <template>
   <div class="com-container">
     <div class="mainPage">
+      <!-- 顶部导航区域 -->
       <el-menu
         :default-active="activePath"
         class="el-menu-demo"
@@ -40,12 +41,31 @@
             </el-switch>
           </template>
         </el-menu-item>
+        <el-menu-item>
+          <template>
+            <!-- 选择周次下拉框 -->
+            <div class="selectWeek">
+              <el-date-picker
+                v-model="time"
+                type="week"
+                format="yyyy-MM-dd 第 WW 周"
+                placeholder="选择周"
+                :clearable="false"
+              >
+              </el-date-picker>
+            </div>
+          </template>
+        </el-menu-item>
       </el-menu>
+      <!-- echart图表区域 -->
       <div class="echart-area">
         <div class="editor-area" v-if="editorShow">
           <ace :option="scriptStr" :chartName="ChartOptionName"></ace>
         </div>
-        <router-view ref="ref"></router-view>
+        <router-view
+          ref="ref"
+          :currentWeek="[currentWeek, startOfWeek, endOfWeek]"
+        ></router-view>
       </div>
     </div>
   </div>
@@ -54,6 +74,10 @@
 export default {
   data() {
     return {
+      time: this.$moment(new Date()).format('YYYY-MM-DD'),
+      currentWeek:'',
+      startOfWeek:'',
+      endOfWeek:'',
       // 编辑器显示状态
       editorShow: false,
       activePath: '',
@@ -61,8 +85,8 @@ export default {
       // 图表组件的option配置字符串
       scriptStr: '',
       // 图表名称
-      ChartOptionName:'',
-      optionList:[], //图表组件传来的历史配置
+      ChartOptionName: '',
+      optionList: [], //图表组件传来的历史配置
       navList: [
         { path: '/diskIOPage', name: '磁盘IO分布' },
         { path: '/SIUPage', name: '交换机接口使用' },
@@ -78,9 +102,21 @@ export default {
     this.getChartOptionName()
     this.getOptionList()
   },
-  mounted() {},
+  beforeMount(){
+    
+  },
+  mounted() {
+    this.getDateRange(this.time)
+    this.getOption()
+
+  },
   watch: {
-    scriptStr: function(newVal, oldVal) {},
+    // scriptStr: function(newVal, oldVal) {},
+    time: function(newVal) {
+      // newVal = newVal.format('yyyy-MM-dd')
+      this.getDateRange(newVal)
+      this.$emit('sendCurrentWeek',  [this.currentWeek,this.startOfWeek,this.endOfWeek])
+    },
   },
   methods: {
     handleSelect(key, keyPath) {},
@@ -116,9 +152,19 @@ export default {
     // 接收图表组件传来的保存配置列表
     getOptionList() {
       this.$bus.$on('sendOptionList', res => {
-        console.log(res)
         this.optionList = res
       })
+    },
+    getDateRange(time) {
+      this.currentWeek = this.$moment(time).isoWeek()
+      this.startOfWeek = this.$moment(time)
+        .startOf('week')
+        .toDate()
+        .format('yyyy-MM-dd')
+      this.endOfWeek = this.$moment(time)
+        .endOf('week')
+        .toDate()
+        .format('yyyy-MM-dd')
     },
   },
 }

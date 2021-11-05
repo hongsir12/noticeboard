@@ -4,19 +4,19 @@
     <div class="screen-header">
       <entryHead
         :dataEntryTitle="dataEntryTitle"
-        @sendCurrentWeek="getCurrentWeek"
+        
         ref="entryHeadRef"
       ></entryHead>
     </div>
     <div class="screen-body">
       <div class="top">
         <!-- <dv-border-box-11 :color="['black', 'black']"  title="运行情况"> -->
-        <devEntry :currentWeek="[currentWeek,startOfWeek,endOfWeek]"></devEntry>
+        <devEntry :currentWeek="currentWeek"></devEntry>
         <!-- </dv-border-box-11> -->
       </div>
       <div class="bottom">
         <!-- <dv-border-box-11 :color="['black', 'black']"  title="资源情况"> -->
-        <rsEntry :currentWeek="[currentWeek,startOfWeek,endOfWeek]"></rsEntry>
+        <rsEntry :currentWeek="currentWeek"></rsEntry>
         <!-- </dv-border-box-11> -->
       </div>
     </div>
@@ -31,19 +31,26 @@ export default {
   data() {
     return {
       dataEntryTitle: '南中心系统与设备运行情况数据录入',
-      currentWeek: '', // 当天所处周数
-      startOfWeek: '', // 当周第一天
-      endOfWeek: '', // 当周最后一天
+      // currentWeek: '', // 当天所处周数
+      // startOfWeek: '', // 当周第一天
+      // endOfWeek: '', // 当周最后一天
     }
+  },
+  props: ['currentWeek'],
+  watch: {
+    // 监听父组件传来的新周数
+    currentWeek: function(newVal, oldVal) {
+      
+    },
   },
   created() {},
   mounted() {},
   methods: {
-    getCurrentWeek(res) {
-      this.currentWeek = res[0]
-      this.startOfWeek = res[1]
-      this.endOfWeek = res[2]
-    },
+    // getCurrentWeek(res) {
+    //   this.currentWeek = res[0]
+    //   this.startOfWeek = res[1]
+    //   this.endOfWeek = res[2]
+    // },
   },
   components: {
     entryHead,

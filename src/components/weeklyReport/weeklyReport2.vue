@@ -13,11 +13,24 @@ export default {
       optionList: [], // 保存的配置信息
     }
   },
-
+  props:{
+    currentWeek : {
+      type: Array,
+      default: [],
+    },
+  },
+  watch: {
+    // 监听父组件传来的新周数
+    currentWeek (newVal, oldVal) {
+      // console.log(newVal);
+      this.initChart()
+      this.sendOption()
+    },
+  },
   mounted() {
-    this.$bus.$emit('sendChartOptionName','人员周报表图表配置')
+    this.$bus.$emit('sendChartOptionName', '人员周报表图表配置')
     this.initChart(),
-      this.sendOption(),
+      // this.sendOption(),
       // 接收编辑器组件传来的新的图表配置信息代码
       this.$bus.$on('sendScript', res => {
         this.chartOption = res[0]
@@ -36,37 +49,45 @@ export default {
   },
   methods: {
     //   初始化图表
-    initChart() {
+    async initChart() {
       // 初始化echart实例
       let myChart = this.$echarts.init(this.$refs.chartRef)
       let option
       let data = []
+      let params = {
+        data: [
+          {
+            report_type: '人员周报数据',
+            // 根据当周头末时间查询该周数据
+            starttime: this.currentWeek[1],
+            overtime: this.currentWeek[2],
+          },
+        ],
+      }
+      let { data: tabledata } = await this.$request('apiQuery', params, 'post')
+      
+      tabledata = tabledata.list
+      for (let rec of tabledata) {
+        let date = rec.report_time
+        rec = JSON.parse(rec.report_data)
+        let obj = {
+          姓名: `${rec.station}-${rec.name}`,
+          工单号: rec.workOrder,
+          开始时间: rec.time[0],
+          结束时间: rec.time[1],
+          日期: date,
+          工作内容: rec.tasks,
+        }
+        data.push(obj)
+      }
       // 计算 工作时长
       for (let rec of data) {
-        rec['开始时间'] = rec['日期'] + ' ' + rec['开始时间']
-        rec['结束时间'] = rec['日期'] + ' ' + rec['结束时间']
         rec['工作时长'] = Math.floor(
           (new Date(rec['结束时间']).getTime() -
             new Date(rec['开始时间']).getTime()) /
             1000 /
             60
-        )
-        if (rec['工作时长'] < 0) {
-          //   console.log(rec['工作时长'])
-          let date = new Date(rec['日期']).format('yyyy-MM-dd')
-          date = new Date(date)
-          date = date.setDate(date.getDate() + 1)
-          date = new Date(date).format('yyyy-MM-dd')
-          // console.log(date);
-          rec['结束时间'] = rec['结束时间'].slice(10)
-          rec['结束时间'] = date + rec['结束时间']
-          rec['工作时长'] = Math.floor(
-            (new Date(rec['结束时间']).getTime() -
-              new Date(rec['开始时间']).getTime()) /
-              1000 /
-              60
-          )
-        }
+        )    
       }
 
       // 计算 X轴 Y轴
@@ -103,12 +124,7 @@ export default {
         hashMap[rec['姓名']][`${day}`][`${tmp}`] = true
         if (tmp > 480) {
           tmp = Math.floor(Math.random() * (400 - 300 + 1) + 300)
-        }
-        if (
-          rec['姓名'] === '运维开发岗1-梁志铭' &&
-          rec['开始时间'] === '2021-10-13 9:00:00'
-        ) {
-          tmp = 480
+          // tmp = 480
         }
         return tmp
       }
@@ -217,10 +233,6 @@ export default {
         legend: {},
         tooltip: {
           formatter: param => {
-            // console.log(this);
-            // return param.seriesName + ' <br/>'
-            //     + param.value["存储"] + ' <br/>'
-            //     + param.value["日期"] + ' <br/>';
             if (undefined === param.value['总工时']) {
               return `工作时长: ${param.value['工作时长']}分钟 <br/>姓名: ${param.value['姓名']} <br/>开始时间: ${param.value['开始时间']}`
             } else {
@@ -287,6 +299,7 @@ export default {
       this.chartInstance = myChart
       // 将option赋值给chartOption，此时chartOption内容是一个对象
       this.chartOption = option
+      // this.sendOption()
     },
     // 向父组件传递图表option对象
     sendOption() {
@@ -332,7 +345,6 @@ export default {
       this.$bus.$on('saveOption', res => {
         let item = { name: res[0], option: res[1] }
         this.optionList.push(item)
-        
       })
     },
   },

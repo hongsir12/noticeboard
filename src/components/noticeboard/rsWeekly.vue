@@ -3,8 +3,7 @@
     <div class="container" ref="rsWeeklyRef">
       <div class="weeklyTitle"><span>本周资源信息简述</span></div>
       <div class="describeContainer">
-        <span>1.本周CPU共消耗3000核，同比上周消耗明显增加</span><br />
-        <span>2.本周存储共消耗30TB，存储出现紧张，需要扩容</span><br />
+        {{ weeklyReport }}
       </div>
     </div>
   </div>
@@ -12,10 +11,20 @@
 <script>
 export default {
   data() {
-    return {}
+    return {
+      weeklyReport: null,
+    }
   },
-
+  props: ['currentWeek'], //周数
+  watch: {
+    // 监听父组件传来的新周数
+    currentWeek: function(newVal) {
+      // console.log(newVal);
+      this.getWeeklyReport()
+    },
+  },
   mounted() {
+    this.getWeeklyReport()
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
@@ -23,6 +32,31 @@ export default {
     window.removeEventListener('resize', this.screenAdapter)
   },
   methods: {
+    async getWeeklyReport() {
+      let params = {
+        data: [
+          {
+            report_type: '资源使用情况周报',
+            conditions: [
+              {
+                //根据第几年第几周来查询周报内容
+                week:
+                  this.$moment(this.currentWeek[1]).format('YYYY') +
+                  ' ' +
+                  this.currentWeek[0],
+              },
+            ],
+          },
+        ],
+      }
+      let { data } = await this.$request('apiQuery', params, 'post')
+      if (data.total) {
+        this.weeklyReport = JSON.parse(data.list[0].report_data).content
+        
+      }else{
+        this.weeklyReport = ''
+      }
+    },
     screenAdapter() {
       // 周报标题字体大小
       const titleFontSize = (this.$refs.rsWeeklyRef.offsetWidth / 100) * 8

@@ -15,10 +15,16 @@ export default {
       storageData: null, //存储数据
     }
   },
-
+  props: ['currentWeek'], //周数
+  watch: {
+    // 监听父组件传来的新周数
+    currentWeek: function(newVal, oldVal) {
+      this.getData()
+    },
+  },
   mounted() {
-    this.initChart()
     this.getData()
+    this.initChart()
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完成时候，主动进行屏幕适配
     this.screenAdapter()
@@ -97,177 +103,24 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    getData() {
-      let data = [
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 200,
-          consumed: 90,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 140,
-          consumed: 90,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 150,
-          consumed: 90,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 170,
-          consumed: 90,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 194,
-          consumed: 90,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: 'CPU(核)',
-          total: 200,
-          used: 190,
-          consumed: 90,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 150,
-          consumed: 90,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 130,
-          consumed: 90,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 142,
-          consumed: 90,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 124,
-          consumed: 90,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 156,
-          consumed: 90,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 122,
-          consumed: 90,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: '内存(GB)',
-          total: 220,
-          used: 132,
-          consumed: 90,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 113,
-          consumed: 90,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 124,
-          consumed: 90,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 88,
-          consumed: 90,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 98,
-          consumed: 90,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 102,
-          consumed: 90,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 76,
-          consumed: 90,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: '存储(TB)',
-          total: 180,
-          used: 100,
-          consumed: 90,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-      ]
+    async getData() {
+      let data = []
+      let params = {
+        data: [
+          {
+            report_type: '资源使用情况周报数据',
+            // 根据当周头末时间查询该周数据
+            starttime: this.currentWeek[1],
+            overtime: this.currentWeek[2],
+          },
+        ],
+      }
+      let { data: tabledata } = await this.$request('apiQuery', params, 'post')
+      tabledata = tabledata.list
+      for (let rec of tabledata) {
+        rec = JSON.parse(rec.report_data)
+        data.push(rec)
+      }
       this.allData = data
       this.cpuData = data.filter((value, index, arr) => {
         return value.type == 'CPU(核)'
@@ -299,13 +152,23 @@ export default {
           // 提供一份数据。
           source: [
             ['product', 'CPU(核)', '内存(GB)', '存储(TB)'],
-            ['2021-10-10', ...currentDayResourceUsed()],
-            ['2021-10-11', ...currentDayResourceUsed(1)],
-            ['2021-10-12', ...currentDayResourceUsed(2)],
-            ['2021-10-13', ...currentDayResourceUsed(3)],
-            ['2021-10-14', ...currentDayResourceUsed(4)],
-            ['2021-10-15', ...currentDayResourceUsed(5)],
-            ['2021-10-16', ...currentDayResourceUsed(6)],
+            [this.currentWeek[1], ...currentDayResourceUsed()],
+            [this.$moment(this.currentWeek[1])
+                .add(1, 'd')
+                .format('YYYY-MM-DD'), ...currentDayResourceUsed(1)],
+            [this.$moment(this.currentWeek[1])
+                .add(2, 'd')
+                .format('YYYY-MM-DD'), ...currentDayResourceUsed(2)],
+            [this.$moment(this.currentWeek[1])
+                .add(3, 'd')
+                .format('YYYY-MM-DD'), ...currentDayResourceUsed(3)],
+            [this.$moment(this.currentWeek[1])
+                .add(4, 'd')
+                .format('YYYY-MM-DD'), ...currentDayResourceUsed(4)],
+            [this.$moment(this.currentWeek[1])
+                .add(5, 'd')
+                .format('YYYY-MM-DD'), ...currentDayResourceUsed(5)],
+            [this.currentWeek[2], ...currentDayResourceUsed(6)],
           ],
         },
       }

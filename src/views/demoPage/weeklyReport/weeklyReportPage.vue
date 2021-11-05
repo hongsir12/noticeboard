@@ -1,7 +1,7 @@
 <!---->
 <template>
   <div class="com-page">
-      <weeklyReport2></weeklyReport2>
+      <weeklyReport2 :currentWeek="currentWeek" ></weeklyReport2>
   </div>
 </template>
 <script>
@@ -12,10 +12,14 @@ export default {
   data() {
     return {}
   },
+  props:['currentWeek'],
+  mounted() {
+    
+  },
 
-  mounted() {},
-
-  methods: {},
+  methods: {
+    
+  },
   components:{
       weeklyReport2,
   }

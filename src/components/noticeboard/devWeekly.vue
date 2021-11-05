@@ -2,11 +2,7 @@
   <div class="com-container">
     <div class="container" ref="devWeeklyRef">
       <div class="weeklyTitle"><span>本周设备信息简述</span></div>
-      <div class="describeContainer">
-        <span>1.本周需关注优化设备总数：1200台</span><br />
-        <span>2.本周故障设备总数：400件</span><br />
-        <span>3.系统运行稳定，设备运转正常，MV线路平稳</span><br />
-      </div>
+      <div class="describeContainer">{{ weeklyReport }}</div>
     </div>
   </div>
 </template>
@@ -14,23 +10,59 @@
 export default {
   data() {
     return {
-      
+      weeklyReport: '',
     }
   },
-
+  props: ['currentWeek'], //周数
+  watch: {
+    // 监听父组件传来的新周数
+    currentWeek: function(newVal) {
+      // console.log(newVal);
+      this.getWeeklyReport()
+    },
+  },
   mounted() {
+    this.getWeeklyReport()
     window.addEventListener('resize', this.screenAdapter)
+
     this.screenAdapter()
   },
   destroyed() {
     window.removeEventListener('resize', this.screenAdapter)
   },
   methods: {
+    async getWeeklyReport() {
+      let params = {
+        data: [
+          {
+            report_type: '设备运行情况周报',
+            conditions: [
+              {
+                //根据第几年第几周来查询周报内容
+                week:
+                  this.$moment(this.currentWeek[1]).format('YYYY') +
+                  ' ' +
+                  this.currentWeek[0],
+              },
+            ],
+          },
+        ],
+      }
+      let { data } = await this.$request('apiQuery', params, 'post')
+      if (data.total) {
+        this.weeklyReport = JSON.parse(data.list[0].report_data).content
+      }else{
+        this.weeklyReport = ''
+      }
+    },
     screenAdapter() {
       const titleFontSize = (this.$refs.devWeeklyRef.offsetWidth / 100) * 8
-      const describeContainerFontSize = (this.$refs.devWeeklyRef.offsetWidth /100)*4.8
+      const describeContainerFontSize =
+        (this.$refs.devWeeklyRef.offsetWidth / 100) * 4.8
       let weeklyTitle = document.getElementsByClassName('weeklyTitle')[0]
-      let describeContainer = document.getElementsByClassName('describeContainer')[0]
+      let describeContainer = document.getElementsByClassName(
+        'describeContainer'
+      )[0]
       weeklyTitle.style.fontSize = `${titleFontSize}px`
       describeContainer.style.fontSize = `${describeContainerFontSize}px`
     },

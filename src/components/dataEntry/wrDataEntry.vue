@@ -156,7 +156,7 @@ export default {
   mounted() {
     this.getUser()
     // this.getData(this.value)
-    this.changeOption(this.value)
+    // this.changeOption(this.value)
   },
   watch: {
     // 监听父组件传来的新周数

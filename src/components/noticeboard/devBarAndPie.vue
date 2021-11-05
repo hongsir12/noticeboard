@@ -15,10 +15,16 @@ export default {
       mvData: null, //mv线路数据
     }
   },
-
+  props: ['currentWeek'], //周数
+  watch: {
+    // 监听父组件传来的新周数
+    currentWeek: function(newVal, oldVal) {
+      this.getData()
+    },
+  },
   mounted() {
-    this.initChart()
     this.getData()
+    this.initChart()
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
@@ -96,7 +102,6 @@ export default {
                   textStyle: {
                     //数值样式
                     color: 'white',
-                    
                   },
                 },
               },
@@ -113,7 +118,6 @@ export default {
                   textStyle: {
                     //数值样式
                     color: 'white',
-                    
                   },
                 },
               },
@@ -132,7 +136,6 @@ export default {
               textStyle: {
                 //数值样式
                 color: 'white',
-                
               },
             },
             datasetIndex: 1,
@@ -143,177 +146,24 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    getData() {
-      let data = [
-        {
-          type: '物理设备',
-          normal: 2000,
-          focus: 50,
-          err: 5,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 58,
-          err: 1,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 48,
-          err: 2,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 47,
-          err: 7,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 54,
-          err: 4,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 47,
-          err: 4,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 40,
-          err: 3,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 110,
-          err: 20,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 102,
-          err: 11,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 77,
-          err: 18,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 98,
-          err: 19,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 101,
-          err: 21,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 88,
-          err: 16,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 107,
-          err: 19,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 27,
-          err: 1,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 36,
-          err: 0,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 17,
-          err: 2,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 28,
-          err: 4,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 36,
-          err: 5,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 17,
-          err: 1,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 29,
-          err: 4,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-      ]
+    async getData() {
+      let data = []
+      let params = {
+        data: [
+          {
+            report_type: '设备运行情况周报数据',
+            // 根据当周头末时间查询该周数据
+            starttime: this.currentWeek[1],
+            overtime: this.currentWeek[2],
+          },
+        ],
+      }
+      let { data: tabledata } = await this.$request('apiQuery', params, 'post')
+      tabledata = tabledata.list
+      for (let rec of tabledata) {
+        rec = JSON.parse(rec.report_data)
+        data.push(rec)
+      }
       this.allData = data
       this.pDevData = data.filter((value, index, arr) => {
         return value.type == '物理设备'
@@ -377,7 +227,7 @@ export default {
     screenAdapter() {
       // 处理屏幕适配相关配置项
       const titleFontSize = (this.$refs.devBarAndPieRef.offsetWidth / 100) * 3
-      const labelFontSize = (this.$refs.devBarAndPieRef.offsetWidth /100)*2
+      const labelFontSize = (this.$refs.devBarAndPieRef.offsetWidth / 100) * 2
       const adapterOption = {
         title: {
           textStyle: {

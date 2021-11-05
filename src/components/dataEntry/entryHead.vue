@@ -5,7 +5,7 @@
         <span>{{ title }}</span>
       </div>
       <div class="date-container">
-        <el-date-picker
+        <!-- <el-date-picker
           v-model="time"
           type="week"
           format="yyyy-MM-dd 第 WW 周"
@@ -14,7 +14,7 @@
           ref="dpRef"
           @change="changeTime"
         >
-        </el-date-picker>
+        </el-date-picker> -->
       </div>
     </div>
   </div>
@@ -25,9 +25,9 @@ export default {
     return {
       time: new Date(), //当天日期时间
       title: '',
-      currentWeek: '',  // 当天所处周数
-      startOfWeek: '',  // 当周第一天
-      endOfWeek: '',    // 当周最后一天
+      // currentWeek: '',  // 当天所处周数
+      // startOfWeek: '',  // 当周第一天
+      // endOfWeek: '',    // 当周最后一天
     }
   },
   props: ['dataEntryTitle'],
@@ -35,14 +35,18 @@ export default {
   mounted() {
     this.getDateRange(this.time)
     this.title = this.dataEntryTitle
-    this.$emit('sendCurrentWeek', [this.currentWeek,this.startOfWeek,this.endOfWeek])
+    // this.$emit('sendCurrentWeek', [this.currentWeek,this.startOfWeek,this.endOfWeek])
   },
   watch: {
-    time: function(newVal) {
-      newVal = newVal.format('yyyy-MM-dd')
-      this.getDateRange(newVal)
-      this.$emit('sendCurrentWeek',  [this.currentWeek,this.startOfWeek,this.endOfWeek])
-    },
+    // time: function(newVal) {
+    //   newVal = newVal.format('yyyy-MM-dd')
+    //   this.getDateRange(newVal)
+    //   this.$emit('sendCurrentWeek',  [this.currentWeek,this.startOfWeek,this.endOfWeek])
+    // },
+    // 监听父组件传来的新周数
+    // currentWeek: function(newVal) {
+    //   // console.log(newVal);
+    // },
   },
   methods: {
     getDateRange(time) {

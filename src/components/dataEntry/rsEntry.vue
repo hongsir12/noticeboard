@@ -72,7 +72,7 @@
           <el-table-column prop="total" label="总量" align="center">
             <template slot-scope="scope">
               <input
-                type="text"
+                type="number"
                 v-model="scope.row.total"
                 v-show="scope.row.iseditor"
               />
@@ -82,7 +82,7 @@
           <el-table-column prop="used" label="已使用" align="center">
             <template slot-scope="scope">
               <input
-                type="text"
+                type="number"
                 v-model="scope.row.used"
                 v-show="scope.row.iseditor"
               />
@@ -92,7 +92,7 @@
           <el-table-column prop="consumed" label="消耗" align="center">
             <template slot-scope="scope">
               <input
-                type="text"
+                type="number"
                 v-model="scope.row.consumed"
                 v-show="scope.row.iseditor"
               />
@@ -154,7 +154,8 @@ export default {
   },
   props: ['currentWeek'], //周数
   mounted() {
-    this.changeOption()
+    this.getData()
+
   },
   computed: {
     isDisabled() {
@@ -353,9 +354,9 @@ export default {
               date: row.date,
               type: row.type,
               user: row.user,
-              total: row.total,
-              used: row.used,
-              consumed: row.consumed,
+              total: +row.total,
+              used: +row.used,
+              consumed: +row.consumed,
             },
           },
         ],
@@ -413,7 +414,10 @@ export default {
 </script>
 <style lang="less" scoped>
 .typeNav {
-  align-items: center;
+  display: flex;
+  width: 100%;
+  justify-content:space-between;
+  align-items: flex-start;
   padding: 10px 20px;
   font-size: 24px;
 }

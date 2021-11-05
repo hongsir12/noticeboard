@@ -15,13 +15,19 @@ export default {
       mvData: null,
     }
   },
-
+  props: ['currentWeek'], //周数
+  watch: {
+    // 监听父组件传来的新周数
+    currentWeek: function(newVal, oldVal) {
+      this.getData()
+    },
+  },
   mounted() {
+    this.getData()
     this.initChart(),
-      this.getData(),
-      window.addEventListener('resize', this.screenAdapter),
-      // 在页面加载完成时候，主动进行屏幕适配
-      this.screenAdapter()
+    window.addEventListener('resize', this.screenAdapter),
+    // 在页面加载完成时候，主动进行屏幕适配
+    this.screenAdapter()
   },
   destroyed() {
     // 在组件销毁时需要将监听器取消掉
@@ -36,7 +42,7 @@ export default {
         title: {
           text: '各设备一周故障优化趋势',
           left: 'center',
-          top:'2%',
+          top: '2%',
           textStyle: {
             color: 'white',
           },
@@ -115,177 +121,24 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    getData() {
-      let data = [
-        {
-          type: '物理设备',
-          normal: 2000,
-          focus: 50,
-          err: 5,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 58,
-          err: 1,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 48,
-          err: 2,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 47,
-          err: 7,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 54,
-          err: 4,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 47,
-          err: 4,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: '物理设备',
-          normal: 200,
-          focus: 40,
-          err: 3,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 110,
-          err: 20,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 102,
-          err: 11,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 77,
-          err: 18,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 98,
-          err: 19,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 101,
-          err: 21,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 88,
-          err: 16,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: '操作系统',
-          normal: 220,
-          focus: 107,
-          err: 19,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 27,
-          err: 1,
-          date: '2021-10-10',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 36,
-          err: 0,
-          date: '2021-10-11',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 17,
-          err: 2,
-          date: '2021-10-12',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 28,
-          err: 4,
-          date: '2021-10-13',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 36,
-          err: 5,
-          date: '2021-10-14',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 17,
-          err: 1,
-          date: '2021-10-15',
-          user: 'abc',
-        },
-        {
-          type: 'MV线路',
-          normal: 180,
-          focus: 29,
-          err: 4,
-          date: '2021-10-16',
-          user: 'abc',
-        },
-      ]
+    async getData() {
+      let data = []
+      let params = {
+        data: [
+          {
+            report_type: '设备运行情况周报数据',
+            // 根据当周头末时间查询该周数据
+            starttime: this.currentWeek[1],
+            overtime: this.currentWeek[2],
+          },
+        ],
+      }
+      let { data: tabledata } = await this.$request('apiQuery', params, 'post')
+      tabledata = tabledata.list
+      for (let rec of tabledata) {
+        rec = JSON.parse(rec.report_data)
+        data.push(rec)
+      }
       this.allData = data
       this.pDevData = data.filter((value, index, arr) => {
         return value.type == '物理设备'
@@ -299,7 +152,7 @@ export default {
       this.updateChart()
     },
     updateChart() {
-      // 前十天状态数据
+      // 前n天状态数据
       const that = this
       function currentDayDevFocusAndErr(n = 0) {
         let arr = []
@@ -326,13 +179,38 @@ export default {
               'MV线路-关注',
               'MV线路-故障',
             ],
-            ['2021-10-10', ...currentDayDevFocusAndErr()],
-            ['2021-10-11', ...currentDayDevFocusAndErr(1)],
-            ['2021-10-12', ...currentDayDevFocusAndErr(2)],
-            ['2021-10-13', ...currentDayDevFocusAndErr(3)],
-            ['2021-10-14', ...currentDayDevFocusAndErr(4)],
-            ['2021-10-15', ...currentDayDevFocusAndErr(5)],
-            ['2021-10-16', ...currentDayDevFocusAndErr(6)],
+            [this.currentWeek[1], ...currentDayDevFocusAndErr(0)],
+            [
+              this.$moment(this.currentWeek[1])
+                .add(1, 'd')
+                .format('YYYY-MM-DD'),
+              ...currentDayDevFocusAndErr(1),
+            ],
+            [
+              this.$moment(this.currentWeek[1])
+                .add(2, 'd')
+                .format('YYYY-MM-DD'),
+              ...currentDayDevFocusAndErr(2),
+            ],
+            [
+              this.$moment(this.currentWeek[1])
+                .add(3, 'd')
+                .format('YYYY-MM-DD'),
+              ...currentDayDevFocusAndErr(3),
+            ],
+            [
+              this.$moment(this.currentWeek[1])
+                .add(4, 'd')
+                .format('YYYY-MM-DD'),
+              ...currentDayDevFocusAndErr(4),
+            ],
+            [
+              this.$moment(this.currentWeek[1])
+                .add(5, 'd')
+                .format('YYYY-MM-DD'),
+              ...currentDayDevFocusAndErr(5),
+            ],
+            [this.currentWeek[2], ...currentDayDevFocusAndErr(6)],
           ],
         },
       }

@@ -72,7 +72,7 @@
           <el-table-column prop="normal" label="正常" align="center">
             <template slot-scope="scope">
               <input
-                type="text"
+                type="number"
                 v-model="scope.row.normal"
                 v-show="scope.row.iseditor"
               />
@@ -82,7 +82,7 @@
           <el-table-column prop="focus" label="关注" align="center">
             <template slot-scope="scope">
               <input
-                type="text"
+                type="number"
                 v-model="scope.row.focus"
                 v-show="scope.row.iseditor"
               />
@@ -92,7 +92,7 @@
           <el-table-column prop="err" label="故障" align="center">
             <template slot-scope="scope">
               <input
-                type="text"
+                type="number"
                 v-model="scope.row.err"
                 v-show="scope.row.iseditor"
               />
@@ -156,7 +156,8 @@ export default {
   props: ['currentWeek'], //周数
   created() {},
   mounted() {
-    this.changeOption()
+    this.getData()
+    // this.changeOption()
   },
   computed: {
     isDisabled() {
@@ -171,6 +172,7 @@ export default {
     currentWeek: function(newVal) {
       // console.log(newVal);
       this.getData()
+      this.changeOption(this.value)
     },
   },
   methods: {
@@ -316,6 +318,7 @@ export default {
           ],
         }
         let data = await this.$request('apiUpdate', updateParams, 'post')
+        
       }
       this.$message({
           message: '保存成功',
@@ -355,9 +358,9 @@ export default {
               date: row.date,
               type: row.type,
               user: row.user,
-              normal: row.normal,
-              focus: row.focus,
-              err: row.err,
+              normal: +row.normal,
+              focus: +row.focus,
+              err: +row.err,
             },
           },
         ],
@@ -380,9 +383,9 @@ export default {
       // 要插入的数据格式
       let obj = {
         type: this.value,
-        normal: Math.floor(Math.random() * (5000 - 4000) + 4000),
-        focus: Math.floor(Math.random() * (3000 - 2000) + 2000),
-        err: Math.floor(Math.random() * 40),
+        normal: Math.floor(Math.random() * (2000 - 1000) + 1000),
+        focus: Math.floor(Math.random() * (1000 - 500) + 500),
+        err: Math.floor(Math.random() * 400),
         date: date,
         user: 'kkk',
       }
@@ -415,7 +418,10 @@ export default {
 </script>
 <style lang="less" scoped>
 .typeNav {
-  align-items: center;
+  display: flex;
+  width: 100%;
+  justify-content:space-between;
+  align-items: flex-start;
   padding: 10px 20px;
   font-size: 24px;
 }
